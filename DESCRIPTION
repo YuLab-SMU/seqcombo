@@ -1,0 +1,20 @@
+Package: seqcombo
+Title: sequence combination analysis and visualization
+Version: 0.0.0.9000
+Authors@R: person("Guangchuang", "Yu", email = "guangchuangyu@gmail.com", role = c("aut", "cre"))
+Description: sequence combination analysis and visualization.
+Depends:
+    R (>= 3.3.2)
+Imports:
+    Biostrings,
+    cowplot,
+    dplyr,
+    ggplot2,
+    grid,
+    magrittr,
+    methods,
+    stats4
+License: Artistic-2.0
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 5.0.1
