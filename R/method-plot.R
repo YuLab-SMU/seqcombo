@@ -31,7 +31,7 @@ setMethod("plot", signature(x="SeqDiff"),
               ## grid.draw(gp2)
               ## gp1$vp = viewport(layout.pos.row = 1, layout.pos.col = 1)
               ## grid.draw(gp1)
-              plot_grid(gp1, gp2, ncol=1)
+              plot_grid(gp1, gp2, ncol=1, rel_heights=c(.7, .4))
           }
           )
 
