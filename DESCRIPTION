@@ -1,10 +1,10 @@
 Package: seqcombo
-Title: sequence combination analysis and visualization
-Version: 0.0.0.9000
+Title: sequence recombination visualization
+Version: 0.0.1
 Authors@R: person("Guangchuang", "Yu", email = "guangchuangyu@gmail.com", role = c("aut", "cre"))
-Description: sequence combination analysis and visualization.
+Description: sequence recombination visualization.
 Depends:
-    R (>= 3.3.2)
+    R (>= 3.3.0)
 Imports:
     Biostrings,
     cowplot,
@@ -15,6 +15,9 @@ Imports:
     methods,
     stats4
 License: Artistic-2.0
+VignetteBuilder: knitr
+ByteCompile: true
 Encoding: UTF-8
 LazyData: true
+BugReports: https://github.com/GuangchuangYu/seqcombo/issues
 RoxygenNote: 5.0.1
