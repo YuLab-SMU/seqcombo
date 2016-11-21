@@ -14,9 +14,11 @@ Imports:
     magrittr,
     methods,
     stats4
-License: Artistic-2.0
+Suggests:
+    knitr
 VignetteBuilder: knitr
 ByteCompile: true
+License: Artistic-2.0
 Encoding: UTF-8
 LazyData: true
 BugReports: https://github.com/GuangchuangYu/seqcombo/issues
