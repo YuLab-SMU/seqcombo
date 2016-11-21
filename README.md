@@ -4,13 +4,17 @@ seqcombo: sequence recombination visualization
 ## Installation
 
 ```r
-install.packages("seqcombo", repo="https://guangchuangyu.github.io/seqcombo", type="source")
+repo = c("https://cran.rstudio.com",
+         "https://bioconductor.org/packages/release/bioc",
+         "https://guangchuangyu.github.io/seqcombo")
+install.packages("seqcombo", repo=repo)
 ```
 
 ## Example
 
 ```r
-fas <- list.files(system.file("examples","GVariation", package="seqcombo"), pattern="fas", full.names=TRUE)
+fas <- list.files(system.file("examples","GVariation", package="seqcombo"),
+                  pattern="fas", full.names=TRUE)
 x <- lapply(fas, seqdiff)
 plts <- lapply(x, plot)
 cowplot::plot_grid(plotlist=plts, ncol=1, labels=LETTERS[1:3])
