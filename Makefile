@@ -35,3 +35,6 @@ clean:
 	cd ..;\
 	$(RM) -r $(PKGNAME).Rcheck/
 
+
+add:
+	Rscript -e 'drat:::insert("../$(PKGNAME)_$(PKGVERS).tar.gz", "docs")'
