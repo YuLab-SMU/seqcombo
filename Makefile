@@ -43,4 +43,6 @@ windowsstatus:
 
 addtorepo: windows
 	Rscript -e 'drat:::insert("../$(PKGNAME)_$(PKGVERS).tar.gz", "../drat/docs")';\
-	Rscript -e 'drat:::insert(ypages::get_windows_binary(), "../drat/docs")'
+	Rscript -e 'drat:::insert(ypages::get_windows_binary(), "../drat/docs")';\
+	cd ../drat;\
+	git add .; git commit -m '$(PKGNAME)_$(PKGVERS)'; git push -u origin master
