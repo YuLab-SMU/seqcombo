@@ -1,10 +1,10 @@
 Package: seqcombo
-Version: 0.0.1
+Version: 0.0.2
 Depends: R (>= 3.3.0)
 Imports: Biostrings, cowplot, dplyr, ggplot2, grid, magrittr, methods,
         stats4
 Suggests: knitr
 License: Artistic-2.0
-MD5sum: 1ad31766ff64868f8bc4351b52585307
+MD5sum: d981d558ca6d8ae952915f5825870203
 NeedsCompilation: no
 

@@ -49,7 +49,7 @@ nucleotide_difference <- function(x, reference=1) {
 ##' @importFrom dplyr group_by
 ##' @importFrom dplyr summarize
 ##' @importFrom dplyr select
-nucleotide_difference_count <- function(x, width=50) {
+nucleotide_difference_count <- function(x, width=50, keep0=FALSE) {
     n <- max(x$position)
     bin <- rep(1:ceiling(n/width), each=width)
     position <- c((1:n)[!duplicated(bin)], n)
@@ -58,6 +58,13 @@ nucleotide_difference_count <- function(x, width=50) {
         summarize(position=min(position), count = n()) %>%
         select(-bin)
     y$position <- position[findInterval(y$position, position)]
+    if (keep0) {
+        itv <- seq(1, n, width)
+        yy <- data.frame(position = itv[!itv %in% y$position],
+                         count = 0)
+        y <- rbind(y, yy)
+        y <- y[order(y$position, decreasing=FALSE),]
+    }
     return(y)
 }
 

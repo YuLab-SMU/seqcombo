@@ -2,6 +2,10 @@
 ##' @exportMethod plot
 ##' @param width bin width
 ##' @param title plot title
+##' @param xlab xlab
+##' @param by one of 'bar' and 'area'
+##' @param fill fill color of upper part of the plot
+##' @param colors color of lower part of the plot
 ##' @importFrom ggplot2 ggtitle
 ##' @importFrom ggplot2 ggplot_gtable
 ##' @importFrom ggplot2 ggplot_build
@@ -9,7 +13,10 @@
 ##' @importFrom cowplot plot_grid
 ##' @author guangchuang yu
 setMethod("plot", signature(x="SeqDiff"),
-          function(x, width=50, title="auto") {
+          function(x, width=50, title="auto",
+                   xlab = "Nucleotide Position",
+                   by="bar", fill="firebrick",
+                   colors=c(A="#E495A5", C="#ABB065", G="#39BEB1", T="#ACA4E2")) {
               nn <- names(x@sequence)
               if (is.null(title) || is.na(title)) {
                   title <- ""
@@ -17,8 +24,8 @@ setMethod("plot", signature(x="SeqDiff"),
                   title <- paste(nn[-x@reference], "nucelotide differences relative to", nn[x@reference])
               }
 
-              p1 <- plot_difference_count(x@diff, width) + ggtitle(title)
-              p2 <- plot_difference(x@diff)
+              p1 <- plot_difference_count(x@diff, width, by=by, fill=fill) + ggtitle(title)
+              p2 <- plot_difference(x@diff, colors=colors, xlab)
 
               gp1<- ggplot_gtable(ggplot_build(p1))
               gp2<- ggplot_gtable(ggplot_build(p2))
@@ -46,24 +53,34 @@ setMethod("plot", signature(x="SeqDiff"),
 ##' @importFrom ggplot2 theme_minimal
 ##' @importFrom ggplot2 theme
 ##' @importFrom ggplot2 element_blank
-plot_difference <- function(x) {
+##' @importFrom ggplot2 scale_color_manual
+plot_difference <- function(x, colors, xlab="Nucleotide Position") {
     yy = 4:1
     names(yy) = c("A", "C", "G", "T")
     x$y <- yy[x$difference]
     ggplot(x, aes_(x=~position, y=~y, color=~difference)) +
         geom_segment(aes_(x=~position, xend=~position, y=~y, yend=~y+.8)) +
-        xlab("Nucleotide Position") + ylab(NULL) +
+        xlab(xlab) + ylab(NULL) +
         scale_y_continuous(breaks=yy, labels=names(yy)) +
         theme_minimal() +
         theme(legend.position="none")+
-        theme(axis.text.x=element_blank(), axis.ticks.x = element_blank())
+        theme(axis.text.x=element_blank(), axis.ticks.x = element_blank()) +
+        scale_color_manual(values=colors)
 }
 
 ##' @importFrom ggplot2 geom_col
+##' @importFrom ggplot2 geom_area
 ##' @importFrom ggplot2 theme_bw
-plot_difference_count <- function(x, width) {
-    d <- nucleotide_difference_count(x, width)
-    ggplot(d, aes_(x=~position, y=~count)) + geom_col(fill='red', width=width*.8) +
+plot_difference_count <- function(x, width, by = 'bar', fill='red') {
+    by <- match.arg(by, c("bar", "area"))
+    if (by == 'bar') {
+        geom <- geom_col(fill=fill, width=width)
+        d <- nucleotide_difference_count(x, width)
+    } else if (by == "area") {
+        geom <- geom_area(fill=fill)
+        d <- nucleotide_difference_count(x, width, keep0=TRUE)
+    }
+    ggplot(d, aes_(x=~position, y=~count)) + geom +
         xlab(NULL) + ylab("Difference") + theme_bw()
 }
 

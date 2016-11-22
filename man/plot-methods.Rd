@@ -6,7 +6,9 @@
 \alias{plot,SeqDiff,ANY-method}
 \title{plot method}
 \usage{
-\S4method{plot}{SeqDiff,ANY}(x, width = 50, title = "auto")
+\S4method{plot}{SeqDiff,ANY}(x, width = 50, title = "auto",
+  xlab = "Nucleotide Position", by = "bar", fill = "firebrick",
+  colors = c(A = "#E495A5", C = "#ABB065", G = "#39BEB1", T = "#ACA4E2"))
 }
 \arguments{
 \item{x}{object}
@@ -14,6 +16,14 @@
 \item{width}{bin width}
 
 \item{title}{plot title}
+
+\item{xlab}{xlab}
+
+\item{by}{one of 'bar' and 'area'}
+
+\item{fill}{fill color of upper part of the plot}
+
+\item{colors}{color of lower part of the plot}
 
 \item{...}{Additional argument list}
 }
