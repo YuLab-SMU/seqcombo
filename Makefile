@@ -41,6 +41,6 @@ windows:
 windowsstatus:
 	STATUS := $(shell Rscript -e 'ypages:::check_rhub_status()')
 
-addtorepo:
+addtorepo: windows
 	Rscript -e 'drat:::insert("../$(PKGNAME)_$(PKGVERS).tar.gz", "docs")';\
-	Rscript -e 'library(ypages); drat:::insert(get_windows_binary(), "docs")'
+	Rscript -e 'drat:::insert(ypages::get_windows_binary(), "docs")'
