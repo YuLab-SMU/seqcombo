@@ -6,7 +6,7 @@ seqcombo: sequence recombination visualization
 ```r
 repo = c("https://cran.rstudio.com",
          "https://bioconductor.org/packages/release/bioc",
-         "https://guangchuangyu.github.io/seqcombo")
+         "https://guangchuangyu.github.io/drat")
 install.packages("seqcombo", repo=repo)
 ```
 
