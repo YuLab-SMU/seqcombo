@@ -35,6 +35,12 @@ clean:
 	cd ..;\
 	$(RM) -r $(PKGNAME).Rcheck/
 
+windows:
+	Rscript -e 'rhub::check_on_windows(".")'
 
-add:
-	Rscript -e 'drat:::insert("../$(PKGNAME)_$(PKGVERS).tar.gz", "docs")'
+windowsstatus:
+	STATUS := $(shell Rscript -e 'ypages:::check_rhub_status()')
+
+addtorepo:
+	Rscript -e 'drat:::insert("../$(PKGNAME)_$(PKGVERS).tar.gz", "docs")';\
+	Rscript -e 'library(ypages); drat:::insert(get_windows_binary(), "docs")'

@@ -5,6 +5,6 @@ Imports: Biostrings, cowplot, dplyr, ggplot2, grid, magrittr, methods,
         stats4
 Suggests: knitr
 License: Artistic-2.0
-MD5sum: d981d558ca6d8ae952915f5825870203
+MD5sum: b07b758e97335e2471657e2ca203a6ce
 NeedsCompilation: no
 
