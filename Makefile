@@ -36,7 +36,8 @@ clean:
 	$(RM) -r $(PKGNAME).Rcheck/
 
 windows:
-	Rscript -e 'rhub::check_on_windows(".")'
+	Rscript -e 'rhub::check_on_windows(".")';\
+	sleep 10;
 
 windowsstatus:
 	STATUS := $(shell Rscript -e 'ypages:::check_rhub_status()')
