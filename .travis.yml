@@ -4,6 +4,10 @@ language: r
 r:
   - bioc-release
 
+os:
+  - linux
+  - osx
+
 cache: packages
 bioc_required: true
 
