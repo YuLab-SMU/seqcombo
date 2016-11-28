@@ -1,3 +1,15 @@
+CHANGES IN VERSION 0.0.4
+------------------------
+ o re-rexport magrittr::%>% and cowplot::plot_grid <2016-11-28, Mon>
+
+CHANGES IN VERSION 0.0.3
+------------------------
+ o more parameters for plot, by, xlab, color, fill etc.
+
+CHANGES IN VERSION 0.0.2
+------------------------
+ o add vignette
+
 CHANGES IN VERSION 0.0.1
 ------------------------
  o initial version with plot method for nucleotide differences between twwo aligned sequences <2016-11-16, Wed>

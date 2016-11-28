@@ -58,7 +58,10 @@ plot_difference <- function(x, colors, xlab="Nucleotide Position") {
     yy = 4:1
     names(yy) = c("A", "C", "G", "T")
     x$y <- yy[x$difference]
-    message(sum(is.na(x$y)), " sites contain deletions or ambiguous bases, which will be ignored in current implementation...")
+    n <- sum(is.na(x$y))
+    if (n > 0) {
+        message(n, " sites contain deletions or ambiguous bases, which will be ignored in current implementation...")
+    }
     x <- x[!is.na(x$y),]
     ggplot(x, aes_(x=~position, y=~y, color=~difference)) +
         geom_segment(aes_(x=~position, xend=~position, y=~y, yend=~y+.8)) +

@@ -13,11 +13,12 @@ install.packages("seqcombo", repo=repo)
 ## Example
 
 ```r
+library(seqcombo)
 fas <- list.files(system.file("examples","GVariation", package="seqcombo"),
                   pattern="fas", full.names=TRUE)
 x <- lapply(fas, seqdiff)
 plts <- lapply(x, plot)
-cowplot::plot_grid(plotlist=plts, ncol=1, labels=LETTERS[1:3])
+plot_grid(plotlist=plts, ncol=1, labels=LETTERS[1:3])
 ```
 
 ![](https://raw.githubusercontent.com/GuangchuangYu/seqcombo/master/inst/figures/GVariation.png)
