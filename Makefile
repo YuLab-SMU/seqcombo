@@ -2,10 +2,15 @@ PKGNAME := $(shell sed -n "s/Package: *\([^ ]*\)/\1/p" DESCRIPTION)
 PKGVERS := $(shell sed -n "s/Version: *\([^ ]*\)/\1/p" DESCRIPTION)
 PKGSRC  := $(shell basename `pwd`)
 
-all: rd check clean
+all: rd vignette check clean
 
 rd:
 	Rscript -e 'roxygen2::roxygenise(".")'
+
+vignette:
+	cd vignettes;\
+	Rscript -e 'rmarkdown::render("seqcombo.Rmd")';\
+	mv seqcombo.html ../docs
 
 build:
 	cd ..;\
