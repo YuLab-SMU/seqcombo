@@ -1,11 +1,13 @@
 ---
 title: "seqcombo: sequence recombination visualization"
-author: "Guangchuang Yu (<guangchuangyu@gmail.com>), School of Public Health, The University of Hong Kong"
+author: "Guangchuang Yu, The University of Hong Kong"
 date: "`r Sys.Date()`"
 bibliography: seqcombo.bib
 csl: nature.csl
 output:
-  html_document:
+  prettydoc::html_pretty:
+    theme: cayman
+    highlight: github
     toc: true
   pdf_document:
     toc: true
@@ -31,7 +33,8 @@ Here we use the data published in `Potato
 Research`[@chang_complete_2015] as an example.
 
 ```{r}
-fas <- list.files(system.file("examples","GVariation", package="seqcombo"), pattern="fas", full.names=TRUE)
+fas <- list.files(system.file("examples","GVariation", package="seqcombo"),
+                  pattern="fas", full.names=TRUE)
 fas
 ```
 

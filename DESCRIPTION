@@ -13,6 +13,7 @@ Imports:
     grid,
     magrittr,
     methods,
+    prettydoc,
     stats4
 Suggests:
     knitr
