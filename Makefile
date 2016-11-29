@@ -39,10 +39,14 @@ windows:
 	Rscript -e 'rhub::check_on_windows(".")';\
 	sleep 10;
 
+osx:
+	cd ..;\
+	R CMD INSTALL --build $(PKGNAME)
+
 windowsstatus:
 	STATUS := $(shell Rscript -e 'ypages:::check_rhub_status()')
 
-addtorepo: windows
+addtorepo: windows osx
 	Rscript -e 'drat:::insert("../$(PKGNAME)_$(PKGVERS).tar.gz", "../drat/docs")';\
 	Rscript -e 'drat:::insert(ypages::get_windows_binary(), "../drat/docs")';\
 	cd ../drat;\
