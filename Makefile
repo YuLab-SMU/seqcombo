@@ -10,7 +10,7 @@ rd:
 vignette:
 	cd vignettes;\
 	Rscript -e 'rmarkdown::render("seqcombo.Rmd")';\
-	mv seqcombo.html ../docs
+	mv seqcombo.html ../docs/index.html
 
 build:
 	cd ..;\
