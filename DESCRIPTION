@@ -13,10 +13,10 @@ Imports:
     grid,
     magrittr,
     methods,
-    prettydoc,
     stats4
 Suggests:
-    knitr
+    knitr,
+    prettydoc
 VignetteBuilder: knitr
 ByteCompile: true
 License: Artistic-2.0

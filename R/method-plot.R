@@ -6,7 +6,9 @@
 ##' @param by one of 'bar' and 'area'
 ##' @param fill fill color of upper part of the plot
 ##' @param colors color of lower part of the plot
+##' @param xlim limits of x-axis
 ##' @importFrom ggplot2 ggtitle
+##' @importFrom ggplot2 xlim
 ##' @importFrom ggplot2 ggplot_gtable
 ##' @importFrom ggplot2 ggplot_build
 ##' @importFrom grid unit.pmax
@@ -16,7 +18,8 @@ setMethod("plot", signature(x="SeqDiff"),
           function(x, width=50, title="auto",
                    xlab = "Nucleotide Position",
                    by="bar", fill="firebrick",
-                   colors=c(A="#E495A5", C="#ABB065", G="#39BEB1", T="#ACA4E2")) {
+                   colors=c(A="#E495A5", C="#ABB065", G="#39BEB1", T="#ACA4E2"),
+                   xlim = NULL) {
               nn <- names(x@sequence)
               if (is.null(title) || is.na(title)) {
                   title <- ""
@@ -26,6 +29,11 @@ setMethod("plot", signature(x="SeqDiff"),
 
               p1 <- plot_difference_count(x@diff, width, by=by, fill=fill) + ggtitle(title)
               p2 <- plot_difference(x@diff, colors=colors, xlab)
+
+              if (!is.null(xlim)) {
+                  p1 <- p1 + xlim(xlim)
+                  p2 <- p2 + xlim(xlim)
+              }
 
               gp1<- ggplot_gtable(ggplot_build(p1))
               gp2<- ggplot_gtable(ggplot_build(p2))

@@ -8,7 +8,8 @@
 \usage{
 \S4method{plot}{SeqDiff,ANY}(x, width = 50, title = "auto",
   xlab = "Nucleotide Position", by = "bar", fill = "firebrick",
-  colors = c(A = "#E495A5", C = "#ABB065", G = "#39BEB1", T = "#ACA4E2"))
+  colors = c(A = "#E495A5", C = "#ABB065", G = "#39BEB1", T = "#ACA4E2"),
+  xlim = NULL)
 }
 \arguments{
 \item{x}{object}
@@ -24,6 +25,8 @@
 \item{fill}{fill color of upper part of the plot}
 
 \item{colors}{color of lower part of the plot}
+
+\item{xlim}{limits of x-axis}
 
 \item{...}{Additional argument list}
 }
