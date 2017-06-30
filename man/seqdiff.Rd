@@ -20,4 +20,3 @@ calculate difference of two aligned sequences
 \author{
 guangchuang yu
 }
-

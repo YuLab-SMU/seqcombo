@@ -39,4 +39,3 @@ plot method generics
 \author{
 guangchuang yu
 }
-

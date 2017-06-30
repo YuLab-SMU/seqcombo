@@ -13,8 +13,10 @@ Imports:
     grid,
     magrittr,
     methods,
+    rvcheck,
     stats4
 Suggests:
+    emojifont,
     knitr,
     prettydoc,
     tibble
@@ -24,4 +26,4 @@ License: Artistic-2.0
 Encoding: UTF-8
 LazyData: true
 BugReports: https://github.com/GuangchuangYu/seqcombo/issues
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1

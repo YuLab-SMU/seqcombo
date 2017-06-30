@@ -26,6 +26,7 @@ knitr::opts_chunk$set(tidy = FALSE,
 ```{r echo=FALSE, results="hide", message=FALSE}
 library("seqcombo")
 library(tibble)
+library(emojifont)
 library(ggplot2)
 ```
 
@@ -153,7 +154,17 @@ x <- virus_info$x
 virus_info$x <- virus_info$y
 virus_info$y <- x
 virus_info$label_position <- c(rep("right", 3), "left", "left", "right", "right")
-plot_reassort(virus_info, flow_info, v_color=~Host, v_fill=~Host) + scale_y_reverse() + scale_x_continuous(limits=c(0, 5.5))
+plot_reassort(virus_info, flow_info, v_color=~Host, v_fill=~Host) +
+    scale_y_reverse() + scale_x_continuous(limits=c(0, 5.5))
+```
+
+User can also use Emoji to label the virus (host information in this example):
+
+```{r fig.width=9, fig.height=7, fig.showtext=TRUE}
+virus_info$label <- c("chicken", "woman", "pig", "pig", "pig", "pig", "woman")
+plot_reassort(virus_info, flow_info, v_color=~Host, v_fill=~Host,
+              parse='emoji', t_size=8, t_color='firebrick') +
+    scale_y_reverse()
 ```
 
 

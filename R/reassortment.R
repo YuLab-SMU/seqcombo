@@ -8,6 +8,9 @@
 ##' @param v_fill the color to fill viruses; can use expression (e.g. v_fill=~Host) to fill virus by specific variable
 ##' @param l_color color of the lines that indicate genetic flow
 ##' @param asp aspect ratio of the plotting device
+##' @param parse whether parse label, only works if 'label' and 'label_position' exist
+##' @param t_size size of text label
+##' @param t_color color of text label
 ##' @return ggplot object
 ##' @importFrom ggplot2 ggplot
 ##' @importFrom ggplot2 geom_segment
@@ -16,6 +19,7 @@
 ##' @importFrom ggplot2 aes_
 ##' @importFrom grid unit
 ##' @importFrom grid arrow
+##' @importFrom rvcheck get_fun_from_pkg
 ##' @export
 ##' @examples
 ##' library(tibble)
@@ -35,7 +39,7 @@
 ##'
 ##' @author guangchuang yu
 plot_reassort <- function(virus_info, flow_info, v_color="darkgreen", v_fill="steelblue",
-                          l_color="black", asp=1) {
+                          l_color="black", asp=1, parse=FALSE, t_size=3.88, t_color="black") {
 
     require_col <- c('x', 'y', 'id', 'segment_color')
     if (!all(require_col %in% colnames(virus_info)))
@@ -78,8 +82,19 @@ plot_reassort <- function(virus_info, flow_info, v_color="darkgreen", v_fill="st
 
     if (all(c('label', 'label_position') %in% colnames(virus_info))) {
         ld <- generate_label_data(virus_info, hex_data)
+
+        if (parse == 'emoji') {
+            emoji <- get_fun_from_pkg("emojifont", "emoji")
+            ld$label <- emoji(ld$label)
+            ld$vjust <- ld$vjust - 0.25
+            parse <- FALSE
+            family <- "EmojiOne"
+        } else {
+            family <- 'sans'
+        }
+
         p <- p + geom_text(aes_(x=~x, y=~y, label=~label, vjust=~vjust, hjust=~hjust),
-                       data=ld, inherit.aes=FALSE)
+                       data=ld, parse=parse, family=family, size=t_size, color=t_color, inherit.aes=FALSE)
     }
 
     return(p)

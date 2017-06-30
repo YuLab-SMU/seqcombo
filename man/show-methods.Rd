@@ -2,8 +2,8 @@
 % Please edit documentation in R/method-show.R
 \docType{methods}
 \name{show}
-\alias{SeqDiff-class}
 \alias{show}
+\alias{SeqDiff-class}
 \alias{show,SeqDiff-method}
 \title{show method}
 \usage{
@@ -18,4 +18,3 @@ message
 \description{
 show method
 }
-
