@@ -116,7 +116,7 @@ If `label` and `label_position` coloumns are available, the virus labels (virus
 name or other information) will be added automatically.
 
 
-```{r fig.width=9, fig.height=7}
+```{r fig.width=9, fig.height=8}
 virus_info$label <- c("Avian", "Human\nH3N2", "Classic\nswine\nH1N1", "Eurasian swine",
                       "North American swine\n triple reassrotant H3N2",
                       "North American swine\n triple reassortant H1N2", "2009 Human H1N1")
@@ -128,7 +128,7 @@ plot_reassort(virus_info, flow_info, v_color=~Host, v_fill=~Host)
 The output of `plot_reassort` is a `ggplot` object and users can use `ggplot2`
 to modify the details.
 
-```{r fig.width=8, fig.height=7}
+```{r fig.width=7.5, fig.height=7}
 title <- "Reassortment events in evolution of the 2009 influenza A (H1N1) virus"
 caption <- 'Gene segments: PB2, PB1, PA, HA, NP, NA, M, NS'
 color <- c(Avian="purple", Human="red", Swine="darkgreen")
@@ -160,7 +160,7 @@ plot_reassort(virus_info, flow_info, v_color=~Host, v_fill=~Host) +
 
 User can also use Emoji to label the virus (host information in this example):
 
-```{r fig.width=9, fig.height=7, fig.showtext=TRUE}
+```{r fig.width=8, fig.height=7, fig.showtext=TRUE}
 virus_info$label <- c("chicken", "woman", "pig", "pig", "pig", "pig", "woman")
 plot_reassort(virus_info, flow_info, v_color=~Host, v_fill=~Host,
               parse='emoji', t_size=8, t_color='firebrick') +
