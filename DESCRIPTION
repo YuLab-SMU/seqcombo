@@ -1,8 +1,8 @@
 Package: seqcombo
-Title: sequence recombination visualization
-Version: 0.0.4
+Title: Visualization Tool for Sequence Recombination and Reassortment
+Version: 0.0.5
 Authors@R: person("Guangchuang", "Yu", email = "guangchuangyu@gmail.com", role = c("aut", "cre"))
-Description: sequence recombination visualization.
+Description: Provides useful functions for visualizing sequence recombination and virus reassortment events.
 Depends:
     R (>= 3.3.0)
 Imports:
@@ -16,7 +16,8 @@ Imports:
     stats4
 Suggests:
     knitr,
-    prettydoc
+    prettydoc,
+    tibble
 VignetteBuilder: knitr
 ByteCompile: true
 License: Artistic-2.0

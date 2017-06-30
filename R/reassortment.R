@@ -1,4 +1,127 @@
-geom_gene_segment <- function(hexd, color=rainbow(8), width=0.68) {
+##' visualize virus reassortment events
+##'
+##'
+##' @title plot_reassort
+##' @param virus_info virus information
+##' @param flow_info flow information
+##' @param v_color the color of outer boundary of virus; can use expression (e.g. v_color=~Host) to color virus by specific variable
+##' @param v_fill the color to fill viruses; can use expression (e.g. v_fill=~Host) to fill virus by specific variable
+##' @param l_color color of the lines that indicate genetic flow
+##' @param asp aspect ratio of the plotting device
+##' @return ggplot object
+##' @importFrom ggplot2 ggplot
+##' @importFrom ggplot2 geom_segment
+##' @importFrom ggplot2 geom_text
+##' @importFrom ggplot2 geom_blank
+##' @importFrom ggplot2 aes_
+##' @importFrom grid unit
+##' @importFrom grid arrow
+##' @export
+##' @examples
+##' library(tibble)
+##' n <- 8
+##' virus_info <- tibble(id = 1:7,
+##' x = c(rep(1990, 4), rep(2000, 2), 2009),
+##' y = c(1,2,3,5, 1.5, 3, 4),
+##' segment_color = list(rep('purple', n),
+##' rep('red', n), rep('darkgreen', n), rep('lightgreen', n),
+##' c('darkgreen', 'darkgreen', 'red', 'darkgreen', 'red', 'purple', 'red', 'purple'),
+##' c('darkgreen', 'darkgreen', 'red', 'darkgreen', 'darkgreen', 'purple', 'red', 'purple'),
+##' c('darkgreen', 'lightgreen', 'lightgreen', 'darkgreen', 'darkgreen', 'purple', 'red', 'purple')))
+##'
+##' flow_info <- tibble(from = c(1,2,3,3,4,5,6), to = c(5,5,5,6,7,6,7))
+##'
+##' plot_reassort(virus_info, flow_info)
+##'
+##' @author guangchuang yu
+plot_reassort <- function(virus_info, flow_info, v_color="darkgreen", v_fill="steelblue",
+                          l_color="black", asp=1) {
+
+    require_col <- c('x', 'y', 'id', 'segment_color')
+    if (!all(require_col %in% colnames(virus_info)))
+        stop("'x', 'y', and 'id' columns are required in 'virus_info'...")
+
+
+    if (!all(c('from', 'to') %in% colnames(flow_info)))
+        stop("'from' and 'to' columns are required in 'flow_info'...")
+
+    if (!'virus_size' %in% colnames(virus_info))
+        virus_info$virus_size <- 1
+
+    ASP <-  diff(range(virus_info$x)) / diff(range(virus_info$y)) / asp
+    hex_data <- lapply(1:nrow(virus_info), function(i) {
+        x <- generate_hex_data(
+            x = virus_info$x[i],
+            y = virus_info$y[i],
+            size = virus_info$virus_size[i],
+            ASP = ASP)
+        x$id <- virus_info$id[i]
+        return(x)
+    })
+
+    default_aes <- aes_(x=~x, y=~y)
+
+    virus_capsule <- geom_virus_capsule(default_aes, virus_info, hex_data, v_color, v_fill, ASP)
+
+    virus_segment <- lapply(1:nrow(virus_info), function(i)
+        geom_gene_segment(hex_data[[i]],
+                  color=virus_info$segment_color[[i]],
+                  width = .65)
+        )
+
+
+    d <- generate_segment_data(virus_info, flow_info, hex_data, ASP)
+    virus_link <- geom_segment(aes_(x=~x, xend=~xend, y=~y, yend=~yend), data=d, arrow=arrow(length=unit(.3, 'cm')), color=l_color)
+
+
+    p <- ggplot(virus_info, default_aes) + geom_blank() + virus_capsule + virus_segment + virus_link
+
+    if (all(c('label', 'label_position') %in% colnames(virus_info))) {
+        ld <- generate_label_data(virus_info, hex_data)
+        p <- p + geom_text(aes_(x=~x, y=~y, label=~label, vjust=~vjust, hjust=~hjust),
+                       data=ld, inherit.aes=FALSE)
+    }
+
+    return(p)
+}
+
+##' @importFrom ggplot2 geom_polygon
+##' @importFrom utils modifyList
+geom_virus_capsule <- function(mapping, virus_info, hex_data, color, fill, ASP=1, alpha=0.5, size=1) {
+    hex.df <- do.call('rbind', hex_data)
+
+    if (typeof(color) == "language") {
+        vcol <- all.vars(color)
+        if (!vcol %in% colnames(virus_info)) {
+            stop("color variable not available...")
+        }
+        hex.df[, vcol] <- virus_info[[vcol]][match(hex.df$id, virus_info$id)]
+        mapping <- modifyList(mapping, aes_(color=color))
+    }
+
+    if (typeof(fill) == "language") {
+        vf <- all.vars(fill)
+        if (!vf %in% colnames(virus_info)) {
+            stop("fill variable not available...")
+        }
+        hex.df[,vf] <- virus_info[[vf]][match(hex.df$id, virus_info$id)]
+        mapping <- modifyList(mapping, aes_(fill=fill))
+    }
+    mapping <- modifyList(mapping, aes_(group=~id))
+
+    params <- list(mapping=mapping, data=hex.df, alpha=alpha, size=size, inherit.aes=FALSE)
+    if (typeof(color) == "character") {
+        params <- modifyList(list(color=color), params)
+    }
+    if (typeof(fill) == "character") {
+        params <- modifyList(list(fill=fill), params)
+    }
+
+    do.call(geom_polygon, params)
+}
+
+##' @importFrom ggplot2 geom_rect
+geom_gene_segment <- function(hexd, color, width=0.68) {
     n <- length(color)
     y <- hexd$y
     y <- y[y != min(y) & y != max(y)]
@@ -25,21 +148,11 @@ geom_gene_segment <- function(hexd, color=rainbow(8), width=0.68) {
 
     dd <- split(d, color)
     lapply(seq_along(dd), function(i)
-        geom_rect(aes(xmin=xmin, ymin=ymin, xmax=xmax, ymax=ymax),
+        geom_rect(aes_(xmin=~xmin, ymin=~ymin, xmax=~xmax, ymax=~ymax),
                   data= dd[[i]], fill=dd[[i]]$color[1], inherit.aes=F, show.legend=FALSE)
         )
 }
 
-estimate_asp <- function(ASP) {
-    if (ASP < 1) {
-        asp.x <- ASP
-        asp.y <- 1
-    } else {
-        asp.x <- 1
-        asp.y <- 1/ASP
-    }
-    return(c(asp.x, asp.y))
-}
 
 generate_hex_data <- function(x, y, size, ASP) {
     asp <- estimate_asp(ASP)
@@ -74,16 +187,16 @@ generate_segment_data <- function(virus_info, flow_info, hex_data, ASP=1) {
     x.to.adj <- width[flow_info$to] + xadj
     x.to.adj[idx] <- 0
 
-    y.from.adj <- rep(0, nrow(flow_info)) 
+    y.from.adj <- rep(0, nrow(flow_info))
     y.from.adj[idx] <- height[flow_info$from][idx] + yadj
-    y.to.adj <- rep(0, nrow(flow_info)) 
+    y.to.adj <- rep(0, nrow(flow_info))
     y.to.adj[idx] <- height[flow_info$to][idx] + yadj
 
     ii <- x.from != x.to
     x.direction <- sign(x.to - x.from)
     x.from <- x.from + x.from.adj * x.direction
     x.to <- x.to - x.to.adj * x.direction
-    
+
     y.direction <- sign(y.to - y.from)
     y.from <- y.from + y.from.adj * y.direction
     y.to <- y.to - y.to.adj  * y.direction
@@ -175,133 +288,15 @@ generate_label_data <- function(virus_info, hex_data) {
 }
 
 
-plot_reassort <- function(virus_info, flow_info, v_color="darkgreen", v_fill="steelblue", 
-                          l_color="steelblue", asp=1) {
 
-    require_col <- c('x', 'y', 'id', 'segment_color')
-    if (!all(require_col %in% colnames(virus_info))) 
-        stop("'x', 'y', and 'id' columns are required in 'virus_info'...")
-    
-
-    if (!all(c('from', 'to') %in% colnames(flow_info)))
-        stop("'from' and 'to' columns are required in 'flow_info'...")
-
-    if (!'virus_size' %in% colnames(virus_info))
-        virus_info$virus_size <- 1
-
-    default_aes <- aes_(x=~x, y=~y)
-    p <- ggplot(virus_info, default_aes) + geom_blank()
-
-    ASP <-  diff(range(virus_info$x)) / diff(range(virus_info$y)) / asp
-    hex_data <- lapply(1:nrow(virus_info), function(i) {
-        x <- generate_hex_data(
-            x = virus_info$x[i],
-            y = virus_info$y[i],
-            size = virus_info$virus_size[i],
-            ASP = ASP)
-        x$id <- virus_info$id[i]
-        return(x)
-    })
-
-    hex.df <- do.call('rbind', hex_data)
-
-    mapping <- default_aes
-    if (typeof(v_color) == "language") {
-        vcol <- all.vars(v_color)
-        if (!vcol %in% colnames(virus_info)) {
-            stop("v_color not available...")
-        }
-        hex.df[, vcol] <- virus_info[[vcol]][match(hex.df$id, virus_info$id)]
-        mapping <- modifyList(mapping, aes_(color=v_color))
-    }
-
-    if (typeof(v_fill) == "language") {
-        vf <- all.vars(v_fill)
-        if (!vf %in% colnames(virus_info)) {
-            stop("v_fill not available...")
-        }
-        hex.df[,vf] <- virus_info[[vf]][match(hex.df$id, virus_info$id)]
-        mapping <- modifyList(mapping, aes_(fill=v_fill))
-    }
-    mapping <- modifyList(mapping, aes_(group=~id))
-
-    alpha <- .5
-    if (typeof(v_color) == 'character' && typeof(v_fill) != 'character') {
-        p <- p + geom_polygon(mapping, data=hex.df, color=v_color, alpha=alpha, inherit.aes=FALSE, size=1)
-    } else if (typeof(v_color) != 'character' && typeof(v_fill) == 'character') {
-        p <- p + geom_polygon(mapping, data=hex.df, fill=v_fill, alpha=alpha, inherit.aes=FALSE, size=1)
-    } else if (typeof(v_color) == 'character' && typeof(v_fill) == 'character') {
-        p <- p + geom_polygon(mapping, data=hex.df, color=v_color, fill=v_fill, alpha=alpha, inherit.aes=FALSE, size=1)
+estimate_asp <- function(ASP) {
+    if (ASP < 1) {
+        asp.x <- ASP
+        asp.y <- 1
     } else {
-        p <- p + geom_polygon(mapping, data=hex.df, inherit.aes=FALSE, size=1, alpha=alpha)
+        asp.x <- 1
+        asp.y <- 1/ASP
     }
-
-    
-    virus_segment <- lapply(1:nrow(virus_info), function(i)
-        geom_gene_segment(hex_data[[i]], 
-                  color=virus_info$segment_color[[i]],
-                  width = .65)
-        )
-
-    p <- p + virus_segment
-
-    d <- generate_segment_data(virus_info, flow_info, hex_data, ASP)
-    p <- p + geom_segment(aes(x=x, xend=xend, y=y, yend=yend), data=d, arrow=arrow(length=unit(.3, 'cm')), color=l_color)
-
-    if (all(c('label', 'label_position') %in% colnames(virus_info))) {
-        ld <- generate_label_data(virus_info, hex_data)
-        p <- p + geom_text(aes(x, y, label=label, vjust=vjust, hjust=hjust),
-                           data=ld, inherit.aes=FALSE)
-    }
-
-    return(p)
+    return(c(asp.x, asp.y))
 }
-
-
-
-
-require(tibble)
-require(ggplot2)
-
-n <- 8
-virus_info <- tibble(id = 1:7,
-                     x = c(rep(1990, 4), rep(2000, 2), 2009),
-                     y = c(1,2,3,5, 1.5, 3, 4),
-                     segment_color = list(rep('purple', n),
-                                          rep('red', n),
-                                          rep('darkgreen', n),
-                                          rep('lightgreen', n),
-                                          c('darkgreen', 'darkgreen', 'red', 'darkgreen', 'red', 'purple', 'red', 'purple'),
-                                          c('darkgreen', 'darkgreen', 'red', 'darkgreen', 'darkgreen', 'purple', 'red', 'purple'),
-                                          c('darkgreen', 'lightgreen', 'lightgreen', 'darkgreen', 'darkgreen', 'purple', 'red', 'purple')),
-                     Host = c("Avian", "Human", rep("Swine", 4), "Human"),
-                     virus_size = c(rep(1, 3), 2, 1, 1, 1.5),
-                     label = c("Avian", "Human\nH3N2", "Classic\nswine\nH1N1", "Eurasian swine", "North American swine\n triple reassrotant H3N2", "North American swine\n triple reassortant H1N2", "2009 Human H1N1"),
-                     label_position = c('left', 'left', 'left', 'below', 'below', 'upper', 'below')
-                     )
-
-flow_info <- tibble(from = c(1,2,3,3,4,5,6),
-                    to = c(5,5,5,6,7,6,7))
-
-title <- "Reassortment events in evolution of the 2009 influenza A (H1N1) virus"
-caption <- 'Gene Segment: PB2, PB1, PA, HA, NP, NA, M, NS'
-color <- c(Avian="purple", Human="red", Swine="darkgreen")
-
-plot_reassort(virus_info, flow_info, v_color=~Host, v_fill=~Host, asp=1.6) + labs(caption=caption, title=title) +
-    scale_color_manual(values=color) + scale_fill_manual(values=color) + scale_x_continuous(breaks=c(1990, 2000, 2009)) +
-    xlab(NULL) + ylab(NULL) + theme_minimal() +
-    theme(axis.line.y = element_blank(),
-          axis.text.y = element_blank(),
-          axis.ticks.y = element_blank(),
-          panel.grid.minor=element_blank(),
-          panel.grid.major.y=element_blank(),
-          legend.position = c(.95, .1)
-          )
-
-
-
-
-## x <- virus_info$x
-## virus_info$x <- virus_info$y
-## virus_info$y <- x
 
