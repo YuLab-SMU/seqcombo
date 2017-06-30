@@ -53,6 +53,14 @@ plot_reassort <- function(virus_info, flow_info, v_color="darkgreen", v_fill="st
         virus_info$virus_size <- 1
 
     ASP <-  diff(range(virus_info$x)) / diff(range(virus_info$y)) / asp
+
+    if (ASP < 1) {
+        virus_info$virus_size <-  virus_info$virus_size /20 * diff(range(virus_info$y))
+    } else {
+        virus_info$virus_size <-  virus_info$virus_size /20 * diff(range(virus_info$x))
+    }
+
+
     hex_data <- lapply(1:nrow(virus_info), function(i) {
         x <- generate_hex_data(
             x = virus_info$x[i],
