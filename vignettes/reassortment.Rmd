@@ -125,6 +125,15 @@ plot_reassort(virus_info, flow_info, v_color=~Host, v_fill=~Host)
 ```
 
 
+User can use `asp` to set the aspect ratio of hexagons, `asp < 1` for
+thick/short and `asp > 1` for thin/tall.
+
+```{r fig.width=10, fig.height=9, out.width="80%"}
+plot_reassort(virus_info, flow_info, v_color=~Host, v_fill=~Host, asp=2)
+```
+
+
+
 The output of `plot_reassort` is a `ggplot` object and users can use `ggplot2`
 to modify the details.
 
@@ -167,4 +176,18 @@ plot_reassort(virus_info, flow_info, v_color=~Host, v_fill=~Host,
     scale_y_reverse()
 ```
 
+
+In case you don't have xy-coordination information, you can use `igraph` and
+apply you favorite layout algorithm to auto-determine the xy-positions and then
+using them to visualize the reassortment events as shown below:
+
+```{r out.width='75%', echo=F}
+knitr::include_graphics("figures/igraph1.jpeg")
+```
+
+You can also drag the dots for manual adjustment:
+
+```{r out.width='75%', echo=F}
+knitr::include_graphics("figures/igraph2.jpeg")
+```
 
