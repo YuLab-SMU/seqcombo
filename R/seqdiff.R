@@ -11,6 +11,9 @@
 ##' @importClassesFrom Biostrings BStringSet
 ##' @importFrom methods new
 ##' @author guangchuang yu
+##' @examples
+##' fas <- list.files(system.file("examples","GVariation", package="seqcombo"), pattern="fas", full.names=TRUE)
+##' seqdiff(fas[1], reference=1)
 seqdiff <- function(fasta, reference=1) {
     sequence <- readBStringSet(fasta)
     if (length(sequence) != 2 && length(width(sequence)) != 1) {

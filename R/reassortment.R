@@ -172,7 +172,7 @@ geom_gene_segment <- function(hexd, color, width=0.68) {
     dd <- split(d, color)
     lapply(seq_along(dd), function(i)
         geom_rect(aes_(xmin=~xmin, ymin=~ymin, xmax=~xmax, ymax=~ymax),
-                  data= dd[[i]], fill=dd[[i]]$color[1], inherit.aes=F, show.legend=FALSE)
+                  data= dd[[i]], fill=dd[[i]]$color[1], inherit.aes=FALSE, show.legend=FALSE)
         )
 }
 

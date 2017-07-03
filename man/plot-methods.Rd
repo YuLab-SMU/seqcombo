@@ -36,6 +36,11 @@ plot
 \description{
 plot method generics
 }
+\examples{
+fas <- list.files(system.file("examples","GVariation", package="seqcombo"), pattern="fas", full.names=TRUE)
+x1 <- seqdiff(fas[1], reference=1)
+plot(x1)
+}
 \author{
 guangchuang yu
 }

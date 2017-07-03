@@ -1,5 +1,5 @@
 ---
-title: "seqcombo: sequence recombination visualization"
+title: "seqcombo for sequence recombination"
 author: "Guangchuang Yu, The University of Hong Kong"
 date: "`r Sys.Date()`"
 bibliography: seqcombo.bib

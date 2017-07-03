@@ -12,6 +12,10 @@
 ##' @aliases SeqDiff-class
 ##'   show,SeqDiff-method
 ##' @usage show(object)
+##' @examples
+##' fas <- list.files(system.file("examples","GVariation", package="seqcombo"), pattern="fas", full.names=TRUE)
+##' x1 <- seqdiff(fas[1], reference=1)
+##' x1
 setMethod("show",signature(object="SeqDiff"),
           function(object) {
               cat("sequence differences of", paste0(names(object@sequence), collapse=" and "), '\n')

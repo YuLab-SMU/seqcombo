@@ -7,6 +7,9 @@
 \alias{reexports}
 \alias{\%>\%}
 \title{Objects exported from other packages}
+\examples{
+rnorm(10) \%>\% mean
+}
 \keyword{internal}
 \description{
 These objects are imported from other packages. Follow the links

@@ -14,6 +14,10 @@
 ##' @importFrom grid unit.pmax
 ##' @importFrom cowplot plot_grid
 ##' @author guangchuang yu
+##' @examples
+##' fas <- list.files(system.file("examples","GVariation", package="seqcombo"), pattern="fas", full.names=TRUE)
+##' x1 <- seqdiff(fas[1], reference=1)
+##' plot(x1)
 setMethod("plot", signature(x="SeqDiff"),
           function(x, width=50, title="auto",
                    xlab = "Nucleotide Position",
