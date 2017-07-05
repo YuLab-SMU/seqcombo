@@ -6,3 +6,4 @@ cowplot::plot_grid
 ##' rnorm(10) %>% mean
 magrittr::`%>%`
 
+utils::globalVariables(".")

@@ -1,7 +1,35 @@
+##' set layout for reassortment plot
+##'
+##'
+##' @title set_layout
+##' @param virus_info virus information
+##' @param flow_info flow information
+##' @param layout layout method
+##' @return updated virus_info
+##' @importFrom igraph graph.data.frame
+##' @importFrom igraph V
+##' @importFrom igraph layout.auto
+##' @export
+##' @author guangchuang yu
+set_layout <- function(virus_info, flow_info, layout="layout.auto") {
+    if (class(layout) == "character") {
+        layout <- get_fun_from_pkg("igraph", layout)
+    }
+    g <- graph.data.frame(flow_info)
+    coord <- layout(g)
+    i <- match(as.character(V(g)), virus_info$id)
+    virus_info$x <- virus_info$y <- NA
+    virus_info$x[i] <- max(coord[,1]) - coord[,1]
+    virus_info$y[i] <- max(coord[,2]) - coord[,2]
+    return(virus_info)
+}
+
+
+
 ##' visualize virus reassortment events
 ##'
 ##'
-##' @title plot_reassort
+##' @title hyridplot
 ##' @param virus_info virus information
 ##' @param flow_info flow information
 ##' @param v_color the color of outer boundary of virus; can use expression (e.g. v_color=~Host) to color virus by specific variable
@@ -35,16 +63,15 @@
 ##'
 ##' flow_info <- tibble(from = c(1,2,3,3,4,5,6), to = c(5,5,5,6,7,6,7))
 ##'
-##' plot_reassort(virus_info, flow_info)
+##' hybridplot(virus_info, flow_info)
 ##'
 ##' @author guangchuang yu
-plot_reassort <- function(virus_info, flow_info, v_color="darkgreen", v_fill="steelblue",
+hybridplot <- function(virus_info, flow_info, v_color="darkgreen", v_fill="steelblue",
                           l_color="black", asp=1, parse=FALSE, t_size=3.88, t_color="black") {
 
     require_col <- c('x', 'y', 'id', 'segment_color')
     if (!all(require_col %in% colnames(virus_info)))
-        stop("'x', 'y', and 'id' columns are required in 'virus_info'...")
-
+        stop("'x', 'y', 'id' and 'segment_color' columns are required in 'virus_info'...")
 
     if (!all(c('from', 'to') %in% colnames(flow_info)))
         stop("'from' and 'to' columns are required in 'flow_info'...")
@@ -86,7 +113,9 @@ plot_reassort <- function(virus_info, flow_info, v_color="darkgreen", v_fill="st
     virus_link <- geom_segment(aes_(x=~x, xend=~xend, y=~y, yend=~yend), data=d, arrow=arrow(length=unit(.3, 'cm')), color=l_color)
 
 
-    p <- ggplot(virus_info, default_aes) + geom_blank() + virus_capsule + virus_segment + virus_link
+    p <- ggplot(virus_info, default_aes)
+
+    p <- p + geom_blank() + virus_capsule + virus_segment + virus_link
 
     if (all(c('label', 'label_position') %in% colnames(virus_info))) {
         ld <- generate_label_data(virus_info, hex_data)
@@ -201,9 +230,9 @@ generate_segment_data <- function(virus_info, flow_info, hex_data, ASP=1) {
     yadj <- diff(range(virus_info$y)) * 0.01
 
     asp <- estimate_asp(ASP)
-    xdiff <- (x.to - x.from) * asp[1]
-    ydiff <- (y.to - y.from) * asp[2]
-    idx <- abs(ydiff) - abs(xdiff) > 0
+    xdiff <- (x.to - x.from) / xadj #* asp[1]
+    ydiff <- (y.to - y.from) / yadj #* asp[2]
+    idx <- abs(ydiff) > abs(xdiff)
 
     x.from.adj <- width[flow_info$from] + xadj
     x.from.adj[idx] <- 0
@@ -235,7 +264,19 @@ generate_segment_data <- function(virus_info, flow_info, hex_data, ASP=1) {
 
             for (i in ii) {
                 j <- d$id == d$id[i] & d[,x] == d[i, x] & d[,y] == d[i, y]
-                if (all(d$xend[j] > d$x[j])) {
+                if (all(idx[j])) { ## d$xend[j] > d$x[j])) {
+                    ## adjust x
+                    w <- width[d$id[j]][1]/2
+                    offset <- seq(-w, w, length.out=sum(j)+2)
+                    offset <- offset[-c(1, length(offset))]
+                    if (x == 'x') {
+                        jj <- order(d[j, 'xend'], decreasing=FALSE)
+                    } else {
+                        jj <- order(d[j, 'x'], decreasing=FALSE)
+                    }
+                    d[j,x] <- d[j,x] + offset[jj]
+
+                } else {
                     ## left to right, adjust y
                     h <- height[d$id[j]][1]/2
                     offset <- seq(-h, h, length.out=sum(j)+2)
@@ -246,17 +287,6 @@ generate_segment_data <- function(virus_info, flow_info, hex_data, ASP=1) {
                         jj <- order(d[j, 'y'], decreasing=FALSE)
                     }
                     d[j,y] <- d[j,y] + offset[jj]
-                } else {
-                    ## adjust x
-                    w <- width[d$id[j]][1]/2
-                    offset <- seq(-w, w, length.out=sum(j)+2)
-                    offset <- offset[-c(1, length(offset))]
-                    if (y == 'x') {
-                        jj <- order(d[j, 'xend'], decreasing=FALSE)
-                    } else {
-                        jj <- order(d[j, 'x'], decreasing=FALSE)
-                    }
-                    d[j,x] <- d[j,x] + offset[jj]
                 }
             }
         }
@@ -265,7 +295,42 @@ generate_segment_data <- function(virus_info, flow_info, hex_data, ASP=1) {
 
     d <- xyadjust(d, 'x', 'y', width, height, flow_info$from)
     d <- xyadjust(d, 'xend', 'yend', width, height, flow_info$to)
-    return(d)
+
+    d$from <- flow_info$from
+    d$to <- flow_info$to
+    i <- match(d$to, d$from)
+    jj <- which(d$xend == d$x[i] & d$yend == d$y[i])
+    if (length(jj) > 0) {
+        jj <- which(!duplicated(d$to[jj]))
+        for (j in jj) {
+            if (idx[j]) {
+                ## topdown/bottomup line
+                ## adjust x
+                h <- height[d$to[j]]/2
+                offset <- seq(-h, h, length.out=4)
+                if (d$x[j] > d$xend[i[j]]) {
+                    d$xend[j] <- d$xend[j]+offset[3]
+                    d$x[i[j]] <- d$x[i[j]]+offset[2]
+                } else {
+                    d$xend[j] <- d$xend[j]+offset[2]
+                    d$x[i[j]] <- d$x[i[j]]+offset[3]
+                }
+            } else {
+                ## adjust y
+                w <- width[d$to[j]]/2
+                offset <- seq(-w, w, length.out=4)
+                if (d$y[j] > d$yend[i[j]]) {
+                    d$yend[j] <- d$yend[j]+offset[3]
+                    d$y[i[j]] <- d$y[i[j]]+offset[2]
+                } else {
+                    d$yend[j] <- d$yend[j]+offset[2]
+                    d$y[i[j]] <- d$y[i[j]]+offset[3]
+                }
+            }
+        }
+    }
+
+    return(d[, c("x", "y", "xend", "yend")])
 }
 
 

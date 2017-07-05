@@ -18,13 +18,14 @@ simplot <- function(file, query) {
     aln <- readDNAStringSet(file)
     nn <- names(aln)
     idx <- which(nn != query)
-    res <- do.call(rbind, lapply(idx, function(i) {
+    res <- lapply(idx, function(i) {
         x <- toCharacter(aln[i]) == toCharacter(aln[query])
         pos <- seq_along(x)
         y <- data.frame(sequence=nn[i], position=pos, similarity=cumsum(x)/pos * 100)
-    }))
-    ggplot(res, aes_(x=~position, y=~similarity)) +
-        geom_line(aes_(group=~sequence, color=~sequence)) +
+    }) %>% do.call(rbind, .)
+
+    p <- ggplot(res, aes_(x=~position, y=~similarity))
+    p + geom_line(aes_(group=~sequence, color=~sequence)) +
         xlab("Nucleotide Position") + ylab("Similarity (%)") +
         ggtitle(paste("Sequence similarities compare to", query)) +
         theme_minimal() +

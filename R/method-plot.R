@@ -75,8 +75,9 @@ plot_difference <- function(x, colors, xlab="Nucleotide Position") {
         message(n, " sites contain deletions or ambiguous bases, which will be ignored in current implementation...")
     }
     x <- x[!is.na(x$y),]
-    ggplot(x, aes_(x=~position, y=~y, color=~difference)) +
-        geom_segment(aes_(x=~position, xend=~position, y=~y, yend=~y+.8)) +
+    p <- ggplot(x, aes_(x=~position, y=~y, color=~difference))
+
+    p + geom_segment(aes_(x=~position, xend=~position, y=~y, yend=~y+.8)) +
         xlab(xlab) + ylab(NULL) +
         scale_y_continuous(breaks=yy, labels=names(yy)) +
         theme_minimal() +
@@ -98,7 +99,7 @@ plot_difference_count <- function(x, width, by = 'bar', fill='red') {
         keep0 <- TRUE
     }
     d <- nucleotide_difference_count(x, width, keep0)
-    ggplot(d, aes_(x=~position, y=~count)) + geom +
-        xlab(NULL) + ylab("Difference") + theme_bw()
+    p <- ggplot(d, aes_(x=~position, y=~count))
+    p + geom + xlab(NULL) + ylab("Difference") + theme_bw()
 }
 
