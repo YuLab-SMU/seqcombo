@@ -62,7 +62,12 @@ plts <- lapply(x, plot)
 plot_grid(plotlist=plts, ncol=1, labels=LETTERS[1:3])
 ```
 
+# Sequence similarity plot
 
+```{r}
+fas <- system.file("examples/GVariation/sample_alignment.fa", package="seqcombo")
+simplot(fas, 'CF_YL21')
+```
 
 # Session info
 

@@ -1,6 +1,6 @@
 Package: seqcombo
 Title: Visualization Tool for Sequence Recombination and Reassortment
-Version: 0.99.0
+Version: 0.99.1
 Authors@R: person("Guangchuang", "Yu", email = "guangchuangyu@gmail.com", role = c("aut", "cre"))
 Description: Provides useful functions for visualizing sequence recombination and virus reassortment events.
 Depends:
