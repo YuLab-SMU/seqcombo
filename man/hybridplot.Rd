@@ -6,7 +6,7 @@
 \usage{
 hybridplot(virus_info, flow_info, v_color = "darkgreen",
   v_fill = "steelblue", l_color = "black", asp = 1, parse = FALSE,
-  t_size = 3.88, t_color = "black")
+  g_width = 0.65, t_size = 3.88, t_color = "black")
 }
 \arguments{
 \item{virus_info}{virus information}
@@ -22,6 +22,8 @@ hybridplot(virus_info, flow_info, v_color = "darkgreen",
 \item{asp}{aspect ratio of the plotting device}
 
 \item{parse}{whether parse label, only works if 'label' and 'label_position' exist}
+
+\item{g_width}{width of gene segment relative to width of the virus (the hexagon)}
 
 \item{t_size}{size of text label}
 

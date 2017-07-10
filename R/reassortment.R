@@ -37,6 +37,7 @@ set_layout <- function(virus_info, flow_info, layout="layout.auto") {
 ##' @param l_color color of the lines that indicate genetic flow
 ##' @param asp aspect ratio of the plotting device
 ##' @param parse whether parse label, only works if 'label' and 'label_position' exist
+##' @param g_width width of gene segment relative to width of the virus (the hexagon)
 ##' @param t_size size of text label
 ##' @param t_color color of text label
 ##' @return ggplot object
@@ -67,8 +68,7 @@ set_layout <- function(virus_info, flow_info, layout="layout.auto") {
 ##'
 ##' @author guangchuang yu
 hybridplot <- function(virus_info, flow_info, v_color="darkgreen", v_fill="steelblue",
-                          l_color="black", asp=1, parse=FALSE, t_size=3.88, t_color="black") {
-
+                          l_color="black", asp=1, parse=FALSE, g_width=0.65, t_size=3.88, t_color="black") {
     require_col <- c('x', 'y', 'id', 'segment_color')
     if (!all(require_col %in% colnames(virus_info)))
         stop("'x', 'y', 'id' and 'segment_color' columns are required in 'virus_info'...")
@@ -105,7 +105,7 @@ hybridplot <- function(virus_info, flow_info, v_color="darkgreen", v_fill="steel
     virus_segment <- lapply(1:nrow(virus_info), function(i)
         geom_gene_segment(hex_data[[i]],
                   color=virus_info$segment_color[[i]],
-                  width = .65)
+                  width = g_width)
         )
 
 
@@ -192,7 +192,7 @@ geom_gene_segment <- function(hexd, color, width=0.68) {
                     xmax = xmax - xadj,
                     ymin = ymin,
                     ymax = ymax,
-                    color = color)
+                    color = rev(color))
 
     ## ## cannot coexists with aes(fill=VAR)
     ## geom_rect(aes(xmin=xmin, ymin=ymin, xmax=xmax, ymax=ymax, fill=I(color)),
