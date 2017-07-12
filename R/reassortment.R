@@ -173,32 +173,32 @@ geom_virus_capsule <- function(mapping, virus_info, hex_data, color, fill, ASP=1
 }
 
 ##' @importFrom ggplot2 geom_rect
-geom_gene_segment <- function(hexd, color, width=0.68) {
+geom_gene_segment <- function(hexd, color, height=0.68, width=0.8) {
     n <- length(color)
     y <- hexd$y
     y <- y[y != min(y) & y != max(y)]
     ymin <- ymax <- seq(min(y), max(y), length.out=n+1)
     ymin <- ymin[-(n+1)]
     ymax <- ymax[-1]
-    adjust <- (ymax - ymin) * (1 - width)/2
+    adjust <- (ymax - ymin) * (1 - height)/2
     ymin <- ymin + adjust
     ymax <- ymax - adjust
 
     xmin <- min(hexd$x)
     xmax <- max(hexd$x)
-    xadj <- (xmax - xmin) * .1
+    xadj <- (xmax - xmin) * (1-width)/2
 
     d <- data.frame(xmin = xmin + xadj,
                     xmax = xmax - xadj,
                     ymin = ymin,
                     ymax = ymax,
-                    color = rev(color))
+                    color = rev(color)) ## position (from ymin to ymax) is bottom up, while color is specify by top-down
 
     ## ## cannot coexists with aes(fill=VAR)
     ## geom_rect(aes(xmin=xmin, ymin=ymin, xmax=xmax, ymax=ymax, fill=I(color)),
     ##           data= d, inherit.aes=F, show.legend=FALSE)
 
-    dd <- split(d, color)
+    dd <- split(d, d$color)
     lapply(seq_along(dd), function(i)
         geom_rect(aes_(xmin=~xmin, ymin=~ymin, xmax=~xmax, ymax=~ymax),
                   data= dd[[i]], fill=dd[[i]]$color[1], inherit.aes=FALSE, show.legend=FALSE)
