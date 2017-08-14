@@ -1,5 +1,11 @@
+##' plot method for SeqDiff object
+##'
+##' @name plot
 ##' @rdname plot-methods
 ##' @exportMethod plot
+##' @aliases plot,SeqDiff,ANY-method
+##' @docType methods
+##' @param x SeqDiff object
 ##' @param width bin width
 ##' @param title plot title
 ##' @param xlab xlab

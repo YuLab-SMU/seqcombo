@@ -32,8 +32,9 @@ seqdiff <- function(fasta, reference=1) {
 ##' @importFrom Biostrings width
 nucleotide_difference <- function(x, reference=1) {
     n <- width(x[1])
-    s1 <- x[1] %>% toString %>% substring(1:n, 1:n)
-    s2 <- x[2] %>% toString %>% substring(1:n, 1:n)
+    nn <- seq_len(n)
+    s1 <- x[1] %>% toString %>% substring(nn, nn)
+    s2 <- x[2] %>% toString %>% substring(nn, nn)
 
     pos <- which(s1 != s2)
     if (reference == 1) {
@@ -55,7 +56,7 @@ nucleotide_difference <- function(x, reference=1) {
 nucleotide_difference_count <- function(x, width=50, keep0=FALSE) {
     n <- max(x$position)
     bin <- rep(1:ceiling(n/width), each=width)
-    position <- c((1:n)[!duplicated(bin)], n)
+    position <- c(seq_len(n)[!duplicated(bin)], n)
     x$bin <- bin[x$pos]
     y <- x %>% group_by(bin) %>%
         summarize(position=min(position), count = n()) %>%

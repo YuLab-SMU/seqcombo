@@ -4,12 +4,7 @@
 \name{reexports}
 \alias{reexports}
 \alias{plot_grid}
-\alias{reexports}
-\alias{\%>\%}
 \title{Objects exported from other packages}
-\examples{
-rnorm(10) \%>\% mean
-}
 \keyword{internal}
 \description{
 These objects are imported from other packages. Follow the links
@@ -17,7 +12,5 @@ below to see their documentation.
 
 \describe{
   \item{cowplot}{\code{\link[cowplot]{plot_grid}}}
-
-  \item{magrittr}{\code{\link[magrittr]{\%>\%}}}
 }}
 

@@ -29,7 +29,7 @@ set_layout <- function(virus_info, flow_info, layout="layout.auto") {
 ##' visualize virus reassortment events
 ##'
 ##'
-##' @title hyridplot
+##' @title hyrid_plot
 ##' @param virus_info virus information
 ##' @param flow_info flow information
 ##' @param v_color the color of outer boundary of virus; can use expression (e.g. v_color=~Host) to color virus by specific variable
@@ -64,10 +64,10 @@ set_layout <- function(virus_info, flow_info, layout="layout.auto") {
 ##'
 ##' flow_info <- tibble(from = c(1,2,3,3,4,5,6), to = c(5,5,5,6,7,6,7))
 ##'
-##' hybridplot(virus_info, flow_info)
+##' hybrid_plot(virus_info, flow_info)
 ##'
 ##' @author guangchuang yu
-hybridplot <- function(virus_info, flow_info, v_color="darkgreen", v_fill="steelblue",
+hybrid_plot <- function(virus_info, flow_info, v_color="darkgreen", v_fill="steelblue",
                           l_color="black", asp=1, parse=FALSE, g_width=0.65, t_size=3.88, t_color="black") {
     require_col <- c('x', 'y', 'id', 'segment_color')
     if (!all(require_col %in% colnames(virus_info)))
@@ -222,8 +222,8 @@ generate_segment_data <- function(virus_info, flow_info, hex_data, ASP=1) {
     y.from <- y[match(flow_info$from, virus_info$id)]
     y.to <- y[match(flow_info$to, virus_info$id)]
 
-    width <- sapply(hex_data, function(x) max(x$x)) - x
-    height <- sapply(hex_data, function(x) max(x$y)) - y
+    width <- vapply(hex_data, function(x) max(x$x), numeric(1)) - x
+    height <- vapply(hex_data, function(x) max(x$y), numeric(1)) - y
     names(width) <- names(height) <- virus_info$id
 
     xadj <- diff(range(virus_info$x)) * 0.01
@@ -258,7 +258,7 @@ generate_segment_data <- function(virus_info, flow_info, hex_data, ASP=1) {
 
     xyadjust <- function(d, x, y, width, height, id) {
         d$id <- id
-        ii <- which(duplicated(d[, c(x, y, 'id')]))
+        ii <- anyDuplicated(d[, c(x, y, 'id')])
         if (length(ii)) {
             ii <- ii[!duplicated(d[ii,'id'])]
 
@@ -338,8 +338,8 @@ generate_label_data <- function(virus_info, hex_data) {
     x <- virus_info$x
     y <- virus_info$y
 
-    width <- sapply(hex_data, function(x) max(x$x)) - x
-    height <- sapply(hex_data, function(x) max(x$y)) - y
+    width <- vapply(hex_data, function(x) max(x$x), numeric(1)) - x
+    height <- vapply(hex_data, function(x) max(x$y), numeric(1)) - y
 
     xadj <- diff(range(virus_info$x)) * 0.02
     yadj <- diff(range(virus_info$y)) * 0.02
