@@ -21,3 +21,4 @@ pattern="fas", full.names=TRUE)
 x1 <- seqdiff(fas[1], reference=1)
 get_diff(x1)
 }
+

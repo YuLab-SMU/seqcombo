@@ -13,6 +13,7 @@
 ##' @param fill fill color of upper part of the plot
 ##' @param colors color of lower part of the plot
 ##' @param xlim limits of x-axis
+##' @return plot
 ##' @importFrom ggplot2 ggtitle
 ##' @importFrom ggplot2 xlim
 ##' @importFrom ggplot2 ggplot_gtable

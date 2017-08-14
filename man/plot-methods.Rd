@@ -28,6 +28,9 @@
 
 \item{xlim}{limits of x-axis}
 }
+\value{
+plot
+}
 \description{
 plot method for SeqDiff object
 }
@@ -39,3 +42,4 @@ plot(x1)
 \author{
 guangchuang yu
 }
+
