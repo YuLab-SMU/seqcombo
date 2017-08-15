@@ -88,7 +88,7 @@ hybrid_plot <- function(virus_info, flow_info, v_color="darkgreen", v_fill="stee
     }
 
 
-    hex_data <- lapply(1:nrow(virus_info), function(i) {
+    hex_data <- lapply(seq_len(nrow(virus_info)), function(i) {
         x <- generate_hex_data(
             x = virus_info$x[i],
             y = virus_info$y[i],
@@ -102,7 +102,7 @@ hybrid_plot <- function(virus_info, flow_info, v_color="darkgreen", v_fill="stee
 
     virus_capsule <- geom_virus_capsule(default_aes, virus_info, hex_data, v_color, v_fill, ASP)
 
-    virus_segment <- lapply(1:nrow(virus_info), function(i)
+    virus_segment <- lapply(seq_len(nrow(virus_info)), function(i)
         geom_gene_segment(hex_data[[i]],
                   color=virus_info$segment_color[[i]],
                   width = g_width)
