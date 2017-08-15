@@ -5,8 +5,9 @@
 \title{hyrid_plot}
 \usage{
 hybrid_plot(virus_info, flow_info, v_color = "darkgreen",
-  v_fill = "steelblue", l_color = "black", asp = 1, parse = FALSE,
-  g_width = 0.65, t_size = 3.88, t_color = "black")
+  v_fill = "steelblue", v_shape = "ellipse", l_color = "black", asp = 1,
+  parse = FALSE, g_height = 0.65, g_width = 0.65, t_size = 3.88,
+  t_color = "black")
 }
 \arguments{
 \item{virus_info}{virus information}
@@ -17,11 +18,15 @@ hybrid_plot(virus_info, flow_info, v_color = "darkgreen",
 
 \item{v_fill}{the color to fill viruses; can use expression (e.g. v_fill=~Host) to fill virus by specific variable}
 
+\item{v_shape}{one of 'hexagon' or 'ellipse'}
+
 \item{l_color}{color of the lines that indicate genetic flow}
 
 \item{asp}{aspect ratio of the plotting device}
 
 \item{parse}{whether parse label, only works if 'label' and 'label_position' exist}
+
+\item{g_height}{height of regions to plot gene segments relative to the virus}
 
 \item{g_width}{width of gene segment relative to width of the virus (the hexagon)}
 

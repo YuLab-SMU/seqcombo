@@ -34,9 +34,11 @@ set_layout <- function(virus_info, flow_info, layout="layout.auto") {
 ##' @param flow_info flow information
 ##' @param v_color the color of outer boundary of virus; can use expression (e.g. v_color=~Host) to color virus by specific variable
 ##' @param v_fill the color to fill viruses; can use expression (e.g. v_fill=~Host) to fill virus by specific variable
+##' @param v_shape one of 'hexagon' or 'ellipse'
 ##' @param l_color color of the lines that indicate genetic flow
 ##' @param asp aspect ratio of the plotting device
 ##' @param parse whether parse label, only works if 'label' and 'label_position' exist
+##' @param g_height height of regions to plot gene segments relative to the virus
 ##' @param g_width width of gene segment relative to width of the virus (the hexagon)
 ##' @param t_size size of text label
 ##' @param t_color color of text label
@@ -67,8 +69,11 @@ set_layout <- function(virus_info, flow_info, layout="layout.auto") {
 ##' hybrid_plot(virus_info, flow_info)
 ##'
 ##' @author guangchuang yu
-hybrid_plot <- function(virus_info, flow_info, v_color="darkgreen", v_fill="steelblue",
-                          l_color="black", asp=1, parse=FALSE, g_width=0.65, t_size=3.88, t_color="black") {
+hybrid_plot <- function(virus_info, flow_info, v_color="darkgreen", v_fill="steelblue", v_shape="ellipse",
+                        l_color="black", asp=1, parse=FALSE, g_height=0.65, g_width=0.65, t_size=3.88, t_color="black") {
+
+    v_shape <- match.arg(v_shape, c("hexagon", "ellipse"))
+
     require_col <- c('x', 'y', 'id', 'segment_color')
     if (!all(require_col %in% colnames(virus_info)))
         stop("'x', 'y', 'id' and 'segment_color' columns are required in 'virus_info'...")
@@ -87,13 +92,16 @@ hybrid_plot <- function(virus_info, flow_info, v_color="darkgreen", v_fill="stee
         virus_info$virus_size <-  virus_info$virus_size /20 * diff(range(virus_info$x))
     }
 
+    if (v_shape == "ellipse")
+        virus_info$virus_size <- virus_info$virus_size * .5
 
     hex_data <- lapply(seq_len(nrow(virus_info)), function(i) {
-        x <- generate_hex_data(
+        x <- generate_capsule_data(
             x = virus_info$x[i],
             y = virus_info$y[i],
             size = virus_info$virus_size[i],
-            ASP = ASP)
+            ASP = ASP,
+            shape = v_shape)
         x$id <- virus_info$id[i]
         return(x)
     })
@@ -104,8 +112,10 @@ hybrid_plot <- function(virus_info, flow_info, v_color="darkgreen", v_fill="stee
 
     virus_segment <- lapply(seq_len(nrow(virus_info)), function(i)
         geom_gene_segment(hex_data[[i]],
-                  color=virus_info$segment_color[[i]],
-                  width = g_width)
+                          color=virus_info$segment_color[[i]],
+                          g_height = g_height,
+                          g_width = g_width,
+                          v_shape = v_shape)
         )
 
 
@@ -173,10 +183,15 @@ geom_virus_capsule <- function(mapping, virus_info, hex_data, color, fill, ASP=1
 }
 
 ##' @importFrom ggplot2 geom_rect
-geom_gene_segment <- function(hexd, color, height=0.68, width=0.8) {
+geom_gene_segment <- function(hexd, color, height=0.68, g_height=0.65, g_width=0.8, v_shape="hexagon") {
     n <- length(color)
     y <- hexd$y
-    y <- y[y != min(y) & y != max(y)]
+    ## if (v_shape == "ellipse") y <- unique(y)
+    ## y <- y[ y >= quantile(y, .25) & y <= quantile(y, .75)]
+    yh <- diff(range(y))/4 * g_height/0.5
+
+    y <- y[y >= mean(y) - yh & y <= mean(y) + yh]
+
     ymin <- ymax <- seq(min(y), max(y), length.out=n+1)
     ymin <- ymin[-(n+1)]
     ymax <- ymax[-1]
@@ -184,12 +199,15 @@ geom_gene_segment <- function(hexd, color, height=0.68, width=0.8) {
     ymin <- ymin + adjust
     ymax <- ymax - adjust
 
-    xmin <- min(hexd$x)
-    xmax <- max(hexd$x)
-    xadj <- (xmax - xmin) * (1-width)/2
+    x <- hexd$x
+    xx <-x[hexd$y == max(y)]
+    ## x <- hexd$x
+    xmin <- min(x)
+    xmax <- max(x)
+    xadj <- (xmax - xmin) * (1-g_width)/2
 
-    d <- data.frame(xmin = xmin + xadj,
-                    xmax = xmax - xadj,
+    d <- data.frame(xmin = max(xmin + xadj, min(xx)),
+                    xmax = min(xmax - xadj, max(xx)),
                     ymin = ymin,
                     ymax = ymax,
                     color = rev(color)) ## position (from ymin to ymax) is bottom up, while color is specify by top-down
@@ -205,12 +223,32 @@ geom_gene_segment <- function(hexd, color, height=0.68, width=0.8) {
         )
 }
 
+generate_capsule_data <- function(x, y, size, ASP, shape) {
+    if (shape == "ellipse") {
+        res <- generate_ellipse_data(x, y, size, ASP)
+    } else {
+        res <- generate_hex_data(x, y, size, ASP)
+    }
+    return(res)
+}
+
 
 generate_hex_data <- function(x, y, size, ASP) {
     asp <- estimate_asp(ASP)
     data.frame(x = c(rep(-sqrt(3)/2, 2), 0, rep(sqrt(3)/2, 2), 0) * size * asp[1] + x,
                y = c(0.5, -0.5, -1, -0.5, 0.5, 1)* size * asp[2] + y)
 }
+
+generate_ellipse_data <- function(x, y, size, ASP) {
+    asp <- estimate_asp(ASP)
+    a <- 3
+    b <- 4
+    xx <- seq(-sqrt(a), sqrt(a), length.out=500)
+    yy <- sqrt(b * (1 - xx^2 / a))
+    data.frame(x = c(xx,rev(xx)) * size * asp[1] + x,
+               y = c(yy, rev(-yy)) * size * asp[2] + y)
+}
+
 
 
 generate_segment_data <- function(virus_info, flow_info, hex_data, ASP=1) {
@@ -258,7 +296,7 @@ generate_segment_data <- function(virus_info, flow_info, hex_data, ASP=1) {
 
     xyadjust <- function(d, x, y, width, height, id) {
         d$id <- id
-        ii <- anyDuplicated(d[, c(x, y, 'id')])
+        ii <- which(duplicated(d[, c(x, y, 'id')]))
         if (length(ii)) {
             ii <- ii[!duplicated(d[ii,'id'])]
 
