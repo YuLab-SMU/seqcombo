@@ -44,7 +44,8 @@ nucleotide_difference <- function(x, reference=1) {
     }
 
     return(data.frame(position = pos,
-                      difference = diff))
+                      difference = diff,
+                      stringsAsFactors = FALSE))
 }
 
 
