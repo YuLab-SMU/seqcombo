@@ -84,6 +84,23 @@ hybrid_plot <- function(virus_info, flow_info, v_color="darkgreen", v_fill="stee
 ##' @inheritParams hybrid_plot
 ##' @return geom layer
 ##' @export
+##' @examples
+##' library(tibble)
+##' library(ggplot2)
+##' n <- 8
+##' virus_info <- tibble(id = 1:7,
+##' x = c(rep(1990, 4), rep(2000, 2), 2009),
+##' y = c(1,2,3,5, 1.5, 3, 4),
+##' segment_color = list(rep('purple', n),
+##' rep('red', n), rep('darkgreen', n), rep('lightgreen', n),
+##' c('darkgreen', 'darkgreen', 'red', 'darkgreen', 'red', 'purple', 'red', 'purple'),
+##' c('darkgreen', 'darkgreen', 'red', 'darkgreen', 'darkgreen', 'purple', 'red', 'purple'),
+##' c('darkgreen', 'lightgreen', 'lightgreen', 'darkgreen', 'darkgreen', 'purple', 'red', 'purple')))
+##'
+##' flow_info <- tibble(from = c(1,2,3,3,4,5,6), to = c(5,5,5,6,7,6,7))
+##'
+##' ggplot() + geom_hybrid(virus_info, flow_info)
+##'
 ##' @author Guangchuang Yu
 geom_hybrid <- function(virus_info, flow_info, v_color="darkgreen", v_fill="steelblue", v_shape="ellipse",
                         l_color="black", asp=1, parse=FALSE, g_height=0.65, g_width=0.65, t_size=3.88, t_color="black") {
