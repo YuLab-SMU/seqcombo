@@ -72,14 +72,27 @@ set_layout <- function(virus_info, flow_info, layout="layout.auto") {
 hybrid_plot <- function(virus_info, flow_info, v_color="darkgreen", v_fill="steelblue", v_shape="ellipse",
                         l_color="black", asp=1, parse=FALSE, g_height=0.65, g_width=0.65, t_size=3.88, t_color="black") {
 
+    ggplot(virus_info, aes_(x=~x, y=~y)) +
+        geom_hybrid(virus_info, flow_info, v_color, v_fill, v_shape,
+                    l_color, asp, parse, g_height, g_width, t_size, t_color)
+
+}
+
+##' geom layer for reassortment events
+##'
+##' @title geom_hybrid
+##' @inheritParams hybrid_plot
+##' @return geom layer
+##' @export
+##' @author Guangchuang Yu
+geom_hybrid <- function(virus_info, flow_info, v_color="darkgreen", v_fill="steelblue", v_shape="ellipse",
+                        l_color="black", asp=1, parse=FALSE, g_height=0.65, g_width=0.65, t_size=3.88, t_color="black") {
+
     v_shape <- match.arg(v_shape, c("hexagon", "ellipse"))
 
     require_col <- c('x', 'y', 'id', 'segment_color')
     if (!all(require_col %in% colnames(virus_info)))
         stop("'x', 'y', 'id' and 'segment_color' columns are required in 'virus_info'...")
-
-    if (!all(c('from', 'to') %in% colnames(flow_info)))
-        stop("'from' and 'to' columns are required in 'flow_info'...")
 
     if (!'virus_size' %in% colnames(virus_info))
         virus_info$virus_size <- 1
@@ -118,15 +131,16 @@ hybrid_plot <- function(virus_info, flow_info, v_color="darkgreen", v_fill="stee
                           v_shape = v_shape)
         )
 
+    virus_link <- NULL
+    if (!is.null(flow_info)) {
+        if (!all(c('from', 'to') %in% colnames(flow_info)))
+            stop("'from' and 'to' columns are required in 'flow_info'...")
 
-    d <- generate_segment_data(virus_info, flow_info, hex_data, ASP)
-    virus_link <- geom_segment(aes_(x=~x, xend=~xend, y=~y, yend=~yend), data=d, arrow=arrow(length=unit(.3, 'cm')), color=l_color)
+        d <- generate_segment_data(virus_info, flow_info, hex_data, ASP)
+        virus_link <- geom_segment(aes_(x=~x, xend=~xend, y=~y, yend=~yend), data=d, arrow=arrow(length=unit(.3, 'cm')), color=l_color)
+    }
 
-
-    p <- ggplot(virus_info, default_aes)
-
-    p <- p + geom_blank() + virus_capsule + virus_segment + virus_link
-
+    virus_label <- NULL
     if (all(c('label', 'label_position') %in% colnames(virus_info))) {
         ld <- generate_label_data(virus_info, hex_data)
 
@@ -140,11 +154,16 @@ hybrid_plot <- function(virus_info, flow_info, v_color="darkgreen", v_fill="stee
             family <- 'sans'
         }
 
-        p <- p + geom_text(aes_(x=~x, y=~y, label=~label, vjust=~vjust, hjust=~hjust),
-                       data=ld, parse=parse, family=family, size=t_size, color=t_color, inherit.aes=FALSE)
+        virus_label <- geom_text(aes_(x=~x, y=~y, label=~label, vjust=~vjust, hjust=~hjust),
+                                 data=ld, parse=parse, family=family, size=t_size,
+                                 color=t_color, inherit.aes=FALSE)
     }
 
-    return(p)
+    list(
+        virus_capsule,
+        virus_segment,
+        virus_link,
+        virus_label)
 }
 
 ##' @importFrom ggplot2 geom_polygon
