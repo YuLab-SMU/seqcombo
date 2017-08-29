@@ -12,7 +12,7 @@
 ##' @export
 ##' @author guangchuang yu
 set_layout <- function(virus_info, flow_info, layout="layout.auto") {
-    if (class(layout) == "character") {
+    if (is.character(layout)) {
         layout <- get_fun_from_pkg("igraph", layout)
     }
     g <- graph.data.frame(flow_info)
@@ -30,18 +30,11 @@ set_layout <- function(virus_info, flow_info, layout="layout.auto") {
 ##'
 ##'
 ##' @title hyrid_plot
-##' @param virus_info virus information
 ##' @param flow_info flow information
-##' @param v_color the color of outer boundary of virus; can use expression (e.g. v_color=~Host) to color virus by specific variable
-##' @param v_fill the color to fill viruses; can use expression (e.g. v_fill=~Host) to fill virus by specific variable
-##' @param v_shape one of 'hexagon' or 'ellipse'
-##' @param l_color color of the lines that indicate genetic flow
-##' @param asp aspect ratio of the plotting device
 ##' @param parse whether parse label, only works if 'label' and 'label_position' exist
-##' @param g_height height of regions to plot gene segments relative to the virus
-##' @param g_width width of gene segment relative to width of the virus (the hexagon)
 ##' @param t_size size of text label
 ##' @param t_color color of text label
+##' @inheritParams geom_genotype
 ##' @return ggplot object
 ##' @importFrom ggplot2 ggplot
 ##' @importFrom ggplot2 geom_segment
@@ -78,6 +71,65 @@ hybrid_plot <- function(virus_info, flow_info, v_color="darkgreen", v_fill="stee
 
 }
 
+##' geom layer of genotype
+##'
+##'
+##' @title geom_genotype
+##' @param virus_info virus information
+##' @param v_color the color of outer boundary of virus; can use expression (e.g. v_color=~Host) to color virus by specific variable
+##' @param v_fill the color to fill viruses; can use expression (e.g. v_fill=~Host) to fill virus by specific variable
+##' @param v_shape one of 'hexagon' or 'ellipse'
+##' @param l_color color of the lines that indicate genetic flow
+##' @param asp aspect ratio of the plotting device
+##' @param g_height height of regions to plot gene segments relative to the virus
+##' @param g_width width of gene segment relative to width of the virus (the hexagon)
+##' @return geom layer
+##' @export
+##' @author guangchuang yu
+##' @examples
+##' library(tibble)
+##' library(ggplot2)
+##' n <- 8
+##' virus_info <- tibble(id = 1:7,
+##' x = c(rep(1990, 4), rep(2000, 2), 2009),
+##' y = c(1,2,3,5, 1.5, 3, 4),
+##' segment_color = list(rep('purple', n),
+##' rep('red', n), rep('darkgreen', n), rep('lightgreen', n),
+##' c('darkgreen', 'darkgreen', 'red', 'darkgreen', 'red', 'purple', 'red', 'purple'),
+##' c('darkgreen', 'darkgreen', 'red', 'darkgreen', 'darkgreen', 'purple', 'red', 'purple'),
+##' c('darkgreen', 'lightgreen', 'lightgreen', 'darkgreen', 'darkgreen', 'purple', 'red', 'purple')))
+##' ggplot() + geom_genotype(virus_info)
+geom_genotype <- function(virus_info, v_color="darkgreen", v_fill="steelblue", v_shape="ellipse",
+                          l_color="black", asp=1, g_height=0.65, g_width=0.65) {
+
+    ASP <-  asp_(virus_info, asp)
+    virus_info <- set_virus_size(virus_info, ASP, v_shape)
+
+    capsule_data <- get_capsule_data(virus_info, ASP, v_shape)
+
+    geom_genotype_internal(virus_info, capsule_data, ASP, v_color, v_fill, v_shape, g_height, g_width)
+}
+
+geom_genotype_internal <- function(virus_info, capsule_data, ASP, v_color, v_fill, v_shape, g_height=0.65, g_width=0.65) {
+    default_aes <- aes_(x=~x, y=~y)
+
+    virus_capsule <- geom_virus_capsule(default_aes, virus_info, capsule_data, v_color, v_fill, ASP)
+
+    virus_segment <- lapply(seq_len(nrow(virus_info)), function(i)
+        geom_gene_segment(capsule_data[[i]],
+                          color=virus_info$segment_color[[i]],
+                          g_height = g_height,
+                          g_width = g_width,
+                          v_shape = v_shape)
+        )
+
+    list(
+        virus_capsule,
+        virus_segment)
+}
+
+
+
 ##' geom layer for reassortment events
 ##'
 ##' @title geom_hybrid
@@ -105,61 +157,26 @@ hybrid_plot <- function(virus_info, flow_info, v_color="darkgreen", v_fill="stee
 geom_hybrid <- function(virus_info, flow_info, v_color="darkgreen", v_fill="steelblue", v_shape="ellipse",
                         l_color="black", asp=1, parse=FALSE, g_height=0.65, g_width=0.65, t_size=3.88, t_color="black") {
 
-    v_shape <- match.arg(v_shape, c("hexagon", "ellipse"))
+    ASP <-  asp_(virus_info, asp)
+    virus_info <- set_virus_size(virus_info, ASP, v_shape)
 
-    require_col <- c('x', 'y', 'id', 'segment_color')
-    if (!all(require_col %in% colnames(virus_info)))
-        stop("'x', 'y', 'id' and 'segment_color' columns are required in 'virus_info'...")
+    capsule_data <- get_capsule_data(virus_info, ASP, v_shape)
 
-    if (!'virus_size' %in% colnames(virus_info))
-        virus_info$virus_size <- 1
+    genotype <- geom_genotype_internal(virus_info, capsule_data, ASP, v_color, v_fill, v_shape, g_height, g_width)
 
-    ASP <-  diff(range(virus_info$x)) / diff(range(virus_info$y)) / asp
-
-    if (ASP < 1) {
-        virus_info$virus_size <-  virus_info$virus_size /20 * diff(range(virus_info$y))
-    } else {
-        virus_info$virus_size <-  virus_info$virus_size /20 * diff(range(virus_info$x))
-    }
-
-    if (v_shape == "ellipse")
-        virus_info$virus_size <- virus_info$virus_size * .5
-
-    hex_data <- lapply(seq_len(nrow(virus_info)), function(i) {
-        x <- generate_capsule_data(
-            x = virus_info$x[i],
-            y = virus_info$y[i],
-            size = virus_info$virus_size[i],
-            ASP = ASP,
-            shape = v_shape)
-        x$id <- virus_info$id[i]
-        return(x)
-    })
-
-    default_aes <- aes_(x=~x, y=~y)
-
-    virus_capsule <- geom_virus_capsule(default_aes, virus_info, hex_data, v_color, v_fill, ASP)
-
-    virus_segment <- lapply(seq_len(nrow(virus_info)), function(i)
-        geom_gene_segment(hex_data[[i]],
-                          color=virus_info$segment_color[[i]],
-                          g_height = g_height,
-                          g_width = g_width,
-                          v_shape = v_shape)
-        )
 
     virus_link <- NULL
     if (!is.null(flow_info)) {
         if (!all(c('from', 'to') %in% colnames(flow_info)))
             stop("'from' and 'to' columns are required in 'flow_info'...")
 
-        d <- generate_segment_data(virus_info, flow_info, hex_data, ASP)
+        d <- generate_segment_data(virus_info, flow_info, capsule_data, ASP)
         virus_link <- geom_segment(aes_(x=~x, xend=~xend, y=~y, yend=~yend), data=d, arrow=arrow(length=unit(.3, 'cm')), color=l_color)
     }
 
     virus_label <- NULL
     if (all(c('label', 'label_position') %in% colnames(virus_info))) {
-        ld <- generate_label_data(virus_info, hex_data)
+        ld <- generate_label_data(virus_info, capsule_data)
 
         if (parse == 'emoji') {
             emoji <- get_fun_from_pkg("emojifont", "emoji")
@@ -176,11 +193,9 @@ geom_hybrid <- function(virus_info, flow_info, v_color="darkgreen", v_fill="stee
                                  color=t_color, inherit.aes=FALSE)
     }
 
-    list(
-        virus_capsule,
-        virus_segment,
-        virus_link,
-        virus_label)
+    list(genotype,
+         virus_link,
+         virus_label)
 }
 
 ##' @importFrom ggplot2 geom_polygon
@@ -257,6 +272,43 @@ geom_gene_segment <- function(hexd, color, height=0.68, g_height=0.65, g_width=0
         geom_rect(aes_(xmin=~xmin, ymin=~ymin, xmax=~xmax, ymax=~ymax),
                   data= dd[[i]], fill=dd[[i]]$color[1], inherit.aes=FALSE, show.legend=FALSE)
         )
+}
+
+
+set_virus_size <- function(virus_info, ASP, v_shape="ellipse") {
+    v_shape <- match.arg(v_shape, c("hexagon", "ellipse"))
+
+    require_col <- c('x', 'y', 'id', 'segment_color')
+    if (!all(require_col %in% colnames(virus_info)))
+        stop("'x', 'y', 'id' and 'segment_color' columns are required in 'virus_info'...")
+
+    if (!'virus_size' %in% colnames(virus_info))
+        virus_info$virus_size <- 1
+
+    if (ASP < 1) {
+        virus_info$virus_size <-  virus_info$virus_size /20 * diff(range(virus_info$y))
+    } else {
+        virus_info$virus_size <-  virus_info$virus_size /20 * diff(range(virus_info$x))
+    }
+
+    if (v_shape == "ellipse")
+        virus_info$virus_size <- virus_info$virus_size * .5
+
+    return(virus_info)
+}
+
+
+get_capsule_data <- function(virus_info, ASP, v_shape) {
+    lapply(seq_len(nrow(virus_info)), function(i) {
+        x <- generate_capsule_data(
+            x = virus_info$x[i],
+            y = virus_info$y[i],
+            size = virus_info$virus_size[i],
+            ASP = ASP,
+            shape = v_shape)
+        x$id <- virus_info$id[i]
+        return(x)
+    })
 }
 
 generate_capsule_data <- function(x, y, size, ASP, shape) {
@@ -462,3 +514,6 @@ estimate_asp <- function(ASP) {
     return(c(asp.x, asp.y))
 }
 
+asp_ <- function(virus_info, asp = 1) {
+    diff(range(virus_info$x)) / diff(range(virus_info$y)) / asp
+}

@@ -22,4 +22,3 @@ set layout for reassortment plot
 \author{
 guangchuang yu
 }
-

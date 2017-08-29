@@ -42,4 +42,3 @@ plot(x1)
 \author{
 guangchuang yu
 }
-

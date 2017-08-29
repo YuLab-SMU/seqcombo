@@ -2,8 +2,8 @@
 % Please edit documentation in R/method-show.R
 \docType{methods}
 \name{show}
-\alias{SeqDiff-class}
 \alias{show}
+\alias{SeqDiff-class}
 \alias{show,SeqDiff-method}
 \title{show method}
 \usage{
@@ -23,4 +23,3 @@ fas <- list.files(system.file("examples","GVariation", package="seqcombo"), patt
 x1 <- seqdiff(fas[1], reference=1)
 x1
 }
-

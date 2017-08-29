@@ -60,4 +60,3 @@ hybrid_plot(virus_info, flow_info)
 \author{
 guangchuang yu
 }
-

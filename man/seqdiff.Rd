@@ -24,4 +24,3 @@ seqdiff(fas[1], reference=1)
 \author{
 guangchuang yu
 }
-
