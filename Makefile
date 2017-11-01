@@ -40,19 +40,31 @@ clean:
 	cd ..;\
 	$(RM) -r $(PKGNAME).Rcheck/
 
-windows:
-	Rscript -e 'rhub::check_on_windows(".")';\
-	sleep 10;
 
-osx:
-	cd ..;\
-	R CMD INSTALL --build $(PKGNAME)
+update:
+	git fetch --all;\
+	git checkout master;\
+	git merge upstream/master;\
+	git merge origin/master
 
-windowsstatus:
-	STATUS := $(shell Rscript -e 'ypages:::check_rhub_status()')
+push: update
+	git push upstream master;\
+	git push origin master
 
-addtorepo: windows osx
-	Rscript -e 'drat:::insert("../$(PKGNAME)_$(PKGVERS).tar.gz", "../drat/docs")';\
-	Rscript -e 'drat:::insert(ypages::get_windows_binary(), "../drat/docs")';\
-	cd ../drat;\
-	git add .; git commit -m '$(PKGNAME)_$(PKGVERS)'; git push -u origin master
+
+# windows:
+# 	Rscript -e 'rhub::check_on_windows(".")';\
+# 	sleep 10;
+
+# osx:
+# 	cd ..;\
+# 	R CMD INSTALL --build $(PKGNAME)
+
+# windowsstatus:
+# 	STATUS := $(shell Rscript -e 'ypages:::check_rhub_status()')
+
+# addtorepo: windows osx
+# 	Rscript -e 'drat:::insert("../$(PKGNAME)_$(PKGVERS).tar.gz", "../drat/docs")';\
+# 	Rscript -e 'drat:::insert(ypages::get_windows_binary(), "../drat/docs")';\
+# 	cd ../drat;\
+# 	git add .; git commit -m '$(PKGNAME)_$(PKGVERS)'; git push -u origin master
