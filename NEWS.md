@@ -1,3 +1,7 @@
+# seqcombo 1.1.1
+
++ better simplot implementation (2018-01-09, Fri)
+
 CHANGES IN VERSION 0.99.11
 ------------------------
  o geom_genotype <2017-08-29, Tue>
