@@ -40,6 +40,9 @@ clean:
 	cd ..;\
 	$(RM) -r $(PKGNAME).Rcheck/
 
+release:
+	git checkout RELEASE_3_7;\
+	git fetch --all
 
 update:
 	git fetch --all;\
@@ -51,20 +54,8 @@ push: update
 	git push upstream master;\
 	git push origin master
 
+biocinit:
+	git remote add upstream git@git.bioconductor.org:packages/$(PKGNAME).git;\
+	git fetch --all
 
-# windows:
-# 	Rscript -e 'rhub::check_on_windows(".")';\
-# 	sleep 10;
 
-# osx:
-# 	cd ..;\
-# 	R CMD INSTALL --build $(PKGNAME)
-
-# windowsstatus:
-# 	STATUS := $(shell Rscript -e 'ypages:::check_rhub_status()')
-
-# addtorepo: windows osx
-# 	Rscript -e 'drat:::insert("../$(PKGNAME)_$(PKGVERS).tar.gz", "../drat/docs")';\
-# 	Rscript -e 'drat:::insert(ypages::get_windows_binary(), "../drat/docs")';\
-# 	cd ../drat;\
-# 	git add .; git commit -m '$(PKGNAME)_$(PKGVERS)'; git push -u origin master
