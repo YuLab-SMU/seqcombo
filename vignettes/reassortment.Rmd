@@ -1,9 +1,11 @@
 ---
 title: "seqcombo for genetic reassortment"
-author: "Guangchuang Yu, The University of Hong Kong"
+author: "Guangchuang Yu\\
+
+        School of Basic Medical Sciences, Southern Medical University"
 date: "`r Sys.Date()`"
 bibliography: seqcombo.bib
-csl: nature.csl
+biblio-style: apalike
 output:
   prettydoc::html_pretty:
     theme: cayman

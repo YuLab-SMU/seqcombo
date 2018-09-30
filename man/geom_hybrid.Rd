@@ -5,9 +5,9 @@
 \title{geom_hybrid}
 \usage{
 geom_hybrid(virus_info, flow_info, v_color = "darkgreen",
-  v_fill = "steelblue", v_shape = "ellipse", l_color = "black", asp = 1,
-  parse = FALSE, g_height = 0.65, g_width = 0.65, t_size = 3.88,
-  t_color = "black")
+  v_fill = "steelblue", v_shape = "ellipse", l_color = "black",
+  asp = 1, parse = FALSE, g_height = 0.65, g_width = 0.65,
+  t_size = 3.88, t_color = "black")
 }
 \arguments{
 \item{virus_info}{virus information}
