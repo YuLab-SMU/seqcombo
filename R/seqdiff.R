@@ -54,6 +54,7 @@ nucleotide_difference <- function(x, reference=1) {
 ##' @importFrom dplyr group_by
 ##' @importFrom dplyr summarize
 ##' @importFrom dplyr select
+##' @importFrom dplyr n
 nucleotide_difference_count <- function(x, width=50, keep0=FALSE) {
     n <- max(x$position)
     bin <- rep(1:ceiling(n/width), each=width)

@@ -1,3 +1,7 @@
+# seqcombo 1.5.1
+
++ fixed R check by import `dplyr::n` (2019-01-02, Wed)
+
 # seqcombo 1.1.1
 
 + better simplot implementation (2018-01-09, Fri)
