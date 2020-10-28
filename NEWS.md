@@ -1,3 +1,7 @@
+# seqcombo 1.12.0
+
++ Bioconductor 3.12 release (2020-10-28, Wed)
+
 # seqcombo 1.5.1
 
 + fixed R check by import `dplyr::n` (2019-01-02, Wed)
