@@ -6,10 +6,16 @@
 \alias{plot,SeqDiff,ANY-method}
 \title{plot method for SeqDiff object}
 \usage{
-\S4method{plot}{SeqDiff,ANY}(x, width = 50, title = "auto",
-  xlab = "Nucleotide Position", by = "bar", fill = "firebrick",
+\S4method{plot}{SeqDiff,ANY}(
+  x,
+  width = 50,
+  title = "auto",
+  xlab = "Nucleotide Position",
+  by = "bar",
+  fill = "firebrick",
   colors = c(A = "#E495A5", C = "#ABB065", G = "#39BEB1", T = "#ACA4E2"),
-  xlim = NULL)
+  xlim = NULL
+)
 }
 \arguments{
 \item{x}{SeqDiff object}

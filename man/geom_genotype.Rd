@@ -4,9 +4,16 @@
 \alias{geom_genotype}
 \title{geom_genotype}
 \usage{
-geom_genotype(virus_info, v_color = "darkgreen", v_fill = "steelblue",
-  v_shape = "ellipse", l_color = "black", asp = 1, g_height = 0.65,
-  g_width = 0.65)
+geom_genotype(
+  virus_info,
+  v_color = "darkgreen",
+  v_fill = "steelblue",
+  v_shape = "ellipse",
+  l_color = "black",
+  asp = 1,
+  g_height = 0.65,
+  g_width = 0.65
+)
 }
 \arguments{
 \item{virus_info}{virus information}

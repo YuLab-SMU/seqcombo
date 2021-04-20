@@ -4,8 +4,16 @@
 \alias{simplot}
 \title{simplot}
 \usage{
-simplot(file, query, window = 200, step = 20, group = FALSE, id, sep,
-  sd = FALSE)
+simplot(
+  file,
+  query,
+  window = 200,
+  step = 20,
+  group = FALSE,
+  id,
+  sep,
+  sd = FALSE
+)
 }
 \arguments{
 \item{file}{alignment fast file}
