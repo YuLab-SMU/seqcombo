@@ -10,7 +10,7 @@
 ##' @importFrom igraph V
 ##' @importFrom igraph layout.auto
 ##' @export
-##' @author guangchuang yu
+##' @author Guangchuang Yu
 set_layout <- function(virus_info, flow_info, layout="layout.auto") {
     if (is.character(layout)) {
         layout <- get_fun_from_pkg("igraph", layout)
@@ -43,7 +43,7 @@ set_layout <- function(virus_info, flow_info, layout="layout.auto") {
 ##' @importFrom ggplot2 aes_
 ##' @importFrom grid unit
 ##' @importFrom grid arrow
-##' @importFrom rvcheck get_fun_from_pkg
+##' @importFrom yulab.utils get_fun_from_pkg
 ##' @export
 ##' @examples
 ##' library(tibble)
@@ -61,7 +61,7 @@ set_layout <- function(virus_info, flow_info, layout="layout.auto") {
 ##'
 ##' hybrid_plot(virus_info, flow_info)
 ##'
-##' @author guangchuang yu
+##' @author Guangchuang Yu
 hybrid_plot <- function(virus_info, flow_info, v_color="darkgreen", v_fill="steelblue", v_shape="ellipse",
                         l_color="black", asp=1, parse=FALSE, g_height=0.65, g_width=0.65, t_size=3.88, t_color="black") {
 
@@ -85,7 +85,7 @@ hybrid_plot <- function(virus_info, flow_info, v_color="darkgreen", v_fill="stee
 ##' @param g_width width of gene segment relative to width of the virus (the hexagon)
 ##' @return geom layer
 ##' @export
-##' @author guangchuang yu
+##' @author Guangchuang Yu
 ##' @examples
 ##' library(tibble)
 ##' library(ggplot2)

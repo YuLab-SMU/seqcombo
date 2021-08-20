@@ -20,5 +20,5 @@ updated virus_info
 set layout for reassortment plot
 }
 \author{
-guangchuang yu
+Guangchuang Yu
 }

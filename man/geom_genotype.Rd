@@ -53,5 +53,5 @@ c('darkgreen', 'lightgreen', 'lightgreen', 'darkgreen', 'darkgreen', 'purple', '
 ggplot() + geom_genotype(virus_info)
 }
 \author{
-guangchuang yu
+Guangchuang Yu
 }
