@@ -1,3 +1,12 @@
+# seqcombo 1.15.1
+
++ import yulab.utils (2021-08-20, Fri)
++ mv `seqdiff` and `simplot` to ggmsa package
+
+# seqcombo 1.14.0
+
++ Bioconductor 3.13 release
+
 # seqcombo 1.12.0
 
 + Bioconductor 3.12 release (2020-10-28, Wed)
