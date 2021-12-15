@@ -21,6 +21,7 @@ BiocManager::install("seqcombo")
 ```r
 library(tibble)
 library(ggplot2)
+library(seqcombo)
 
 
 n <- 8
