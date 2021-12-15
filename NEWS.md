@@ -1,3 +1,12 @@
+# seqcombo 1.17.1
+
++ update docs (2021-12-15, Wed)
++ remove codes that were incorporated in ggmsa 
+
+# seqcombo 1.16.0
+
++ Bioconductor 3.14 release
+
 # seqcombo 1.15.1
 
 + import yulab.utils (2021-08-20, Fri)

@@ -1,5 +1,5 @@
 ---
-title: "seqcombo for genetic reassortment"
+title: "seqcombo for visualizing genetic reassortment"
 author: "Guangchuang Yu\\
 
         School of Basic Medical Sciences, Southern Medical University"

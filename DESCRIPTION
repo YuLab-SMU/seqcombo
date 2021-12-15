@@ -1,20 +1,14 @@
 Package: seqcombo
-Title: Visualization Tool for Sequence Recombination and Reassortment
-Version: 1.17.0
+Title: Visualization Tool for Genetic Reassortment
+Version: 1.17.1
 Authors@R: person("Guangchuang", "Yu", email = "guangchuangyu@gmail.com", role = c("aut", "cre"))
-Description: Provides useful functions for visualizing sequence recombination
-    and virus reassortment events.
+Description: Provides useful functions for visualizing virus reassortment events.
 Depends:
     R (>= 3.4.0)
 Imports:
-    Biostrings,
-    cowplot,
-    dplyr,
     ggplot2,
     grid,
     igraph,
-    magrittr,
-    methods,
     utils,
     yulab.utils
 Suggests:
@@ -27,7 +21,6 @@ VignetteBuilder: knitr
 ByteCompile: true
 License: Artistic-2.0
 Encoding: UTF-8
-LazyData: true
 BugReports: https://github.com/GuangchuangYu/seqcombo/issues
 biocViews: Alignment, Software, Visualization
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
