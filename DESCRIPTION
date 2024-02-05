@@ -23,4 +23,4 @@ License: Artistic-2.0
 Encoding: UTF-8
 BugReports: https://github.com/GuangchuangYu/seqcombo/issues
 biocViews: Alignment, Software, Visualization
-RoxygenNote: 7.1.2
+RoxygenNote: 7.3.0
