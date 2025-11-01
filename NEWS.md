@@ -1,3 +1,7 @@
+# seqcombo 1.32.0
+
++ Bioconductor RELEASE_3_22 (2025-11-01, Sat)
+
 # seqcombo 1.30.0
 
 + Bioconductor RELEASE_3_21 (2025-04-17, Thu)
