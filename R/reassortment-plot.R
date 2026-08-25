@@ -16,8 +16,10 @@
 ##' @param g_width width of gene segment relative to width of the virus
 ##' @param t_size size of text label
 ##' @param t_color color of text label
-##' @param link_style one of `segment` or `curve`
+##' @param link_style one of `segment`, `curve`, or `elbow`
 ##' @param link_curvature curvature used when `link_style = "curve"`
+##' @param link_elbow_position horizontal bend position used when
+##'   `link_style = "elbow"`
 ##' @return ggplot object
 ##' @importFrom ggplot2 ggplot
 ##' @importFrom ggplot2 aes
@@ -44,14 +46,14 @@
 ##'     from = c(1, 2, 3, 3, 4, 5, 6),
 ##'     to = c(5, 5, 5, 6, 7, 6, 7)
 ##' )
-##' hybrid_plot(virus_info, flow_info)
+##' hybrid_plot(virus_info, flow_info, link_style = "elbow")
 ##' @author Guangchuang Yu
 hybrid_plot <- function(virus_info, flow_info, v_color = "darkgreen",
                         v_fill = "steelblue", v_shape = "ellipse",
                         l_color = "black", asp = 1, parse = FALSE,
                         g_height = 0.65, g_width = 0.65, t_size = 3.88,
                         t_color = "black", link_style = "segment",
-                        link_curvature = 0.15) {
+                        link_curvature = 0.15, link_elbow_position = 0.5) {
     ggplot(virus_info, aes(x = .data[["x"]], y = .data[["y"]])) +
         geom_hybrid(
             virus_info = virus_info,
@@ -67,7 +69,8 @@ hybrid_plot <- function(virus_info, flow_info, v_color = "darkgreen",
             t_size = t_size,
             t_color = t_color,
             link_style = link_style,
-            link_curvature = link_curvature
+            link_curvature = link_curvature,
+            link_elbow_position = link_elbow_position
         )
 }
 
@@ -161,7 +164,7 @@ geom_hybrid <- function(virus_info, flow_info, v_color = "darkgreen",
                         l_color = "black", asp = 1, parse = FALSE,
                         g_height = 0.65, g_width = 0.65, t_size = 3.88,
                         t_color = "black", link_style = "segment",
-                        link_curvature = 0.15) {
+                        link_curvature = 0.15, link_elbow_position = 0.5) {
     scene <- prepare_reassortment_scene(
         virus_info = virus_info,
         flow_info = flow_info,
@@ -182,7 +185,8 @@ geom_hybrid <- function(virus_info, flow_info, v_color = "darkgreen",
                 scene = scene,
                 l_color = l_color,
                 link_style = link_style,
-                link_curvature = link_curvature
+                link_curvature = link_curvature,
+                link_elbow_position = link_elbow_position
             ),
             build_label_layer(
                 scene = scene,
@@ -225,7 +229,8 @@ build_genotype_layers <- function(scene, v_color, v_fill, g_height, g_width) {
 }
 
 
-build_flow_layer <- function(scene, l_color, link_style, link_curvature) {
+build_flow_layer <- function(scene, l_color, link_style, link_curvature,
+                             link_elbow_position) {
     if (is.null(scene$flow_data)) {
         return(NULL)
     }
@@ -246,6 +251,25 @@ build_flow_layer <- function(scene, l_color, link_style, link_curvature) {
             color = l_color,
             curvature = link_curvature,
             inherit.aes = FALSE
+        ))
+    }
+
+    if (link_style == "elbow") {
+        elbow_data <- generate_elbow_flow_data(scene$flow_data, link_elbow_position)
+        return(list(
+            geom_segment(
+                mapping = mapping,
+                data = rbind(elbow_data$lead, elbow_data$middle),
+                color = l_color,
+                inherit.aes = FALSE
+            ),
+            geom_segment(
+                mapping = mapping,
+                data = elbow_data$tail,
+                arrow = arrow(length = unit(0.3, "cm")),
+                color = l_color,
+                inherit.aes = FALSE
+            )
         ))
     }
 

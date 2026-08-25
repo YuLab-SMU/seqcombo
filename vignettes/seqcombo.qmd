@@ -190,6 +190,39 @@ virus_time <- set_layout(virus_time, flow_info, preserve_x = TRUE)
 hybrid_plot(virus_time, flow_info, link_style = "curve")
 ```
 
+For workflows that start from long-format segment records, you can build
+`virus_info` directly from a virus-segment table:
+
+```{r}
+segment_df <- data.frame(
+    id = rep(c("avian", "human"), each = 8),
+    segment = rep(c("PB2", "PB1", "PA", "HA", "NP", "NA", "M", "NS"), 2),
+    color = c(rep("purple", 8), rep("red", 8)),
+    x = rep(c(1990, 2009), each = 8),
+    y = rep(c(1, 2), each = 8),
+    host = rep(c("Avian", "Human"), each = 8)
+)
+
+build_virus_info_from_long(
+    segment_df,
+    x = "x",
+    y = "y",
+    keep = "host"
+)
+```
+
+If you want temporal flows to read more like a timeline, elbow links can make
+the transitions easier to follow:
+
+```{r fig.width=9, fig.height=7}
+hybrid_plot(
+    virus_time,
+    flow_info,
+    link_style = "elbow",
+    link_elbow_position = 0.4
+)
+```
+
 
 User can also use Emoji to label the virus (host information in this example):
 

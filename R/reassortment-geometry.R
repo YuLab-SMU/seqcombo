@@ -330,6 +330,34 @@ generate_label_data <- function(virus_info, hex_data) {
 }
 
 
+generate_elbow_flow_data <- function(flow_data, link_elbow_position = 0.5) {
+    validate_link_elbow_position(link_elbow_position)
+
+    xmid <- flow_data$x + (flow_data$xend - flow_data$x) * link_elbow_position
+
+    lead <- data.frame(
+        x = flow_data$x,
+        xend = xmid,
+        y = flow_data$y,
+        yend = flow_data$y
+    )
+    middle <- data.frame(
+        x = xmid,
+        xend = xmid,
+        y = flow_data$y,
+        yend = flow_data$yend
+    )
+    tail <- data.frame(
+        x = xmid,
+        xend = flow_data$xend,
+        y = flow_data$yend,
+        yend = flow_data$yend
+    )
+
+    list(lead = lead, middle = middle, tail = tail)
+}
+
+
 estimate_asp <- function(ASP) {
     if (ASP < 1) {
         asp.x <- ASP

@@ -2,6 +2,7 @@
 
 export(build_flow_info)
 export(build_virus_info)
+export(build_virus_info_from_long)
 export(geom_genotype)
 export(geom_hybrid)
 export(hybrid_plot)

@@ -41,5 +41,13 @@ validate_segment_color <- function(virus_info) {
 
 
 validate_link_style <- function(link_style) {
-    match.arg(link_style, c("segment", "curve"))
+    match.arg(link_style, c("segment", "curve", "elbow"))
+}
+
+
+validate_link_elbow_position <- function(link_elbow_position) {
+    if (!is.numeric(link_elbow_position) || length(link_elbow_position) != 1L ||
+        is.na(link_elbow_position) || link_elbow_position <= 0 || link_elbow_position >= 1) {
+        stop("'link_elbow_position' must be a single numeric value between 0 and 1...")
+    }
 }

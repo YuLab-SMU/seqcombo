@@ -18,7 +18,8 @@ geom_hybrid(
   t_size = 3.88,
   t_color = "black",
   link_style = "segment",
-  link_curvature = 0.15
+  link_curvature = 0.15,
+  link_elbow_position = 0.5
 )
 }
 \arguments{
@@ -49,9 +50,12 @@ geom_hybrid(
 
 \item{t_color}{color of text label}
 
-\item{link_style}{one of `segment` or `curve`}
+\item{link_style}{one of `segment`, `curve`, or `elbow`}
 
 \item{link_curvature}{curvature used when `link_style = "curve"`}
+
+\item{link_elbow_position}{horizontal bend position used when
+`link_style = "elbow"`}
 }
 \value{
 geom layer

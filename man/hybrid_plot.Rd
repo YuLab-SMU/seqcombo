@@ -18,7 +18,8 @@ hybrid_plot(
   t_size = 3.88,
   t_color = "black",
   link_style = "segment",
-  link_curvature = 0.15
+  link_curvature = 0.15,
+  link_elbow_position = 0.5
 )
 }
 \arguments{
@@ -49,9 +50,12 @@ hybrid_plot(
 
 \item{t_color}{color of text label}
 
-\item{link_style}{one of `segment` or `curve`}
+\item{link_style}{one of `segment`, `curve`, or `elbow`}
 
 \item{link_curvature}{curvature used when `link_style = "curve"`}
+
+\item{link_elbow_position}{horizontal bend position used when
+`link_style = "elbow"`}
 }
 \value{
 ggplot object
@@ -80,7 +84,7 @@ flow_info <- build_flow_info(
     from = c(1, 2, 3, 3, 4, 5, 6),
     to = c(5, 5, 5, 6, 7, 6, 7)
 )
-hybrid_plot(virus_info, flow_info)
+hybrid_plot(virus_info, flow_info, link_style = "elbow")
 }
 \author{
 Guangchuang Yu
