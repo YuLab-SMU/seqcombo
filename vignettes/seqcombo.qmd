@@ -1,27 +1,35 @@
 ---
 title: "seqcombo for visualizing genetic reassortment"
-author: "Guangchuang Yu\\
-
-        School of Basic Medical Sciences, Southern Medical University"
-date: "`r Sys.Date()`"
+author: "Guangchuang Yu, School of Basic Medical Sciences, Southern Medical University"
+date: today
 bibliography: seqcombo.bib
 biblio-style: apalike
-output:
-  prettydoc::html_pretty:
-    theme: cayman
-    highlight: github
+format:
+  html:
     toc: true
-  pdf_document:
-    toc: true
+    theme: none
+    minimal: true
+    embed-resources: true
 vignette: >
   %\VignetteIndexEntry{Reassortment}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\usepackage[utf8]{inputenc}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r style, echo=FALSE, results="asis", message=FALSE}
 knitr::opts_chunk$set(tidy = FALSE,
-		   message = FALSE)
+                   message = FALSE)
+
+r_libs <- unique(unlist(strsplit(
+    paste(Sys.getenv(c("R_LIBS", "R_LIBS_USER", "R_LIBS_SITE")),
+          collapse = .Platform$path.sep),
+    .Platform$path.sep,
+    fixed = TRUE
+)))
+r_libs <- r_libs[nzchar(r_libs)]
+if (length(r_libs) > 0) {
+    .libPaths(unique(c(r_libs, .libPaths())))
+}
 ```
 
 
@@ -211,5 +219,3 @@ You can also drag the dots for manual adjustment:
 knitr::include_graphics("figures/igraph2.jpeg")
 ```
 -->
-
-

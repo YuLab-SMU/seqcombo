@@ -3,3 +3,8 @@
 .RData
 .DS_Store
 *~
+.quarto-cache
+.quarto-lib
+.site
+vignettes/*.html
+vignettes/*_files

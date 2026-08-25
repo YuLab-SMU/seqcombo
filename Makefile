@@ -2,6 +2,10 @@ PKGNAME := $(shell sed -n "s/Package: *\([^ ]*\)/\1/p" DESCRIPTION)
 PKGVERS := $(shell sed -n "s/Version: *\([^ ]*\)/\1/p" DESCRIPTION)
 PKGSRC  := $(shell basename `pwd`)
 BIOCVER := RELEASE_3_23
+QUARTO_CACHE := $(shell pwd)/.quarto-cache
+QUARTO_LIB := $(shell pwd)/.quarto-lib
+QUARTO_R_LIBS := $(shell Rscript -e 'cat(paste(c(normalizePath(".quarto-lib", winslash = "/", mustWork = FALSE), .libPaths()), collapse = .Platform$$path.sep))')
+PUBLISH_DIR ?= .site
 
 
 all: rd check clean
@@ -10,9 +14,13 @@ rd:
 	Rscript -e 'roxygen2::roxygenise(".")'
 
 vignette:
+	mkdir -p $(QUARTO_CACHE);\
+	mkdir -p $(QUARTO_LIB);\
+	mkdir -p $(PUBLISH_DIR);\
+	R CMD INSTALL -l $(QUARTO_LIB) .;\
 	cd vignettes;\
-	Rscript -e 'rmarkdown::render("seqcombo.Rmd")';\
-	mv seqcombo.html ../docs/index.html
+	R_LIBS="$(QUARTO_R_LIBS)" XDG_CACHE_HOME=$(QUARTO_CACHE) LOCALAPPDATA=$(QUARTO_CACHE) quarto render seqcombo.qmd --to html;\
+	mv seqcombo.html ../$(PUBLISH_DIR)/index.html
 
 build:
 	cd ..;\

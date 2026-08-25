@@ -1,6 +1,11 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 Makefile
-docs
 .travis.yml
 outdated
+^\.github($|/)
+^\.quarto-cache($|/)
+^\.quarto-lib($|/)
+^\.site($|/)
+^vignettes/.*_files$
+^vignettes/.*\.html$

@@ -1,3 +1,13 @@
+# seqcombo 1.35.1
+
++ improve ggplot2 compatibility by replacing deprecated `aes_()` usage and switching line border sizing to `linewidth`
++ add validation for `flow_info` ids and empty `segment_color` entries, and preserve existing coordinates for nodes not present in `flow_info`
++ refresh package metadata, including the package title, description, and `BugReports` URL, and add the `rlang` import
++ migrate the package vignette from `.Rmd` to Quarto `.qmd` and update the vignette build workflow
++ standardize historical `NEWS.md` entries and fix typos for older releases
++ replace the legacy `docs/`-based GitHub Pages flow with deployment from a dedicated `gh-pages` branch via GitHub Actions
++ remove `deploy.sh` and `seqcombo.Rproj`
+
 # seqcombo 1.34.0
 
 + Bioconductor RELEASE_3_23 (2026-04-29, Wed)
@@ -22,60 +32,60 @@
 
 + Bioconductor RELEASE_3_18 (2023-10-25, Wed)
 
-# seqcombo
+# seqcombo 1.18.0
 
 + Bioconductor RELEASE_3_16 (2022-11-02, Wed)
 
 # seqcombo 1.17.1
 
 + update docs (2021-12-15, Wed)
-+ remove codes that were incorporated in ggmsa 
++ remove code that was incorporated into ggmsa
 
 # seqcombo 1.16.0
 
-+ Bioconductor 3.14 release
++ Bioconductor RELEASE_3_14
 
 # seqcombo 1.15.1
 
 + import yulab.utils (2021-08-20, Fri)
-+ mv `seqdiff` and `simplot` to ggmsa package
++ move `seqdiff` and `simplot` to the ggmsa package
 
 # seqcombo 1.14.0
 
-+ Bioconductor 3.13 release
++ Bioconductor RELEASE_3_13
 
 # seqcombo 1.12.0
 
-+ Bioconductor 3.12 release (2020-10-28, Wed)
++ Bioconductor RELEASE_3_12 (2020-10-28, Wed)
 
 # seqcombo 1.5.1
 
-+ fixed R check by import `dplyr::n` (2019-01-02, Wed)
++ fix R CMD check by importing `dplyr::n` (2019-01-02, Wed)
 
 # seqcombo 1.1.1
 
 + better simplot implementation (2018-01-09, Fri)
 
-CHANGES IN VERSION 0.99.11
-------------------------
- o geom_genotype <2017-08-29, Tue>
+# seqcombo 0.99.11
 
-CHANGES IN VERSION 0.99.10
-------------------------
- o geom_hybrid <2017-08-17, Thu>
++ add `geom_genotype` (2017-08-29, Tue)
 
-CHANGES IN VERSION 0.99.9
-------------------------
- o hybrid_plot <2017-06-30, Fri>
+# seqcombo 0.99.10
 
-CHANGES IN VERSION 0.0.3
-------------------------
- o more parameters for plot, by, xlab, color, fill etc.
++ add `geom_hybrid` (2017-08-17, Thu)
 
-CHANGES IN VERSION 0.0.2
-------------------------
- o add vignette
+# seqcombo 0.99.9
 
-CHANGES IN VERSION 0.0.1
-------------------------
- o initial version with plot method for nucleotide differences between twwo aligned sequences <2016-11-16, Wed>
++ add `hybrid_plot` (2017-06-30, Fri)
+
+# seqcombo 0.0.3
+
++ add more parameters for plot, `by`, `xlab`, `color`, and `fill`
+
+# seqcombo 0.0.2
+
++ add vignette
+
+# seqcombo 0.0.1
+
++ initial version with a plot method for nucleotide differences between two aligned sequences (2016-11-16, Wed)

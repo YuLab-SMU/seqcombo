@@ -15,10 +15,14 @@ set_layout <- function(virus_info, flow_info, layout="layout.auto") {
     if (is.character(layout)) {
         layout <- get_fun_from_pkg("igraph", layout)
     }
-    g <- graph.data.frame(flow_info)
+    validate_flow_info(flow_info, virus_info$id)
+    g <- graph.data.frame(flow_info[, c("from", "to")])
     coord <- layout(g)
     i <- match(as.character(V(g)), virus_info$id)
-    virus_info$x <- virus_info$y <- NA
+    if (!"x" %in% colnames(virus_info))
+        virus_info$x <- NA_real_
+    if (!"y" %in% colnames(virus_info))
+        virus_info$y <- NA_real_
     virus_info$x[i] <- max(coord[,1]) - coord[,1]
     virus_info$y[i] <- max(coord[,2]) - coord[,2]
     return(virus_info)
@@ -40,7 +44,8 @@ set_layout <- function(virus_info, flow_info, layout="layout.auto") {
 ##' @importFrom ggplot2 geom_segment
 ##' @importFrom ggplot2 geom_text
 ##' @importFrom ggplot2 geom_blank
-##' @importFrom ggplot2 aes_
+##' @importFrom ggplot2 aes
+##' @importFrom rlang .data
 ##' @importFrom grid unit
 ##' @importFrom grid arrow
 ##' @importFrom yulab.utils get_fun_from_pkg
@@ -65,7 +70,7 @@ set_layout <- function(virus_info, flow_info, layout="layout.auto") {
 hybrid_plot <- function(virus_info, flow_info, v_color="darkgreen", v_fill="steelblue", v_shape="ellipse",
                         l_color="black", asp=1, parse=FALSE, g_height=0.65, g_width=0.65, t_size=3.88, t_color="black") {
 
-    ggplot(virus_info, aes_(x=~x, y=~y)) +
+    ggplot(virus_info, aes(x=.data[["x"]], y=.data[["y"]])) +
         geom_hybrid(virus_info, flow_info, v_color, v_fill, v_shape,
                     l_color, asp, parse, g_height, g_width, t_size, t_color)
 
@@ -111,7 +116,8 @@ geom_genotype <- function(virus_info, v_color="darkgreen", v_fill="steelblue", v
 }
 
 geom_genotype_internal <- function(virus_info, capsule_data, ASP, v_color, v_fill, v_shape, g_height=0.65, g_width=0.65) {
-    default_aes <- aes_(x=~x, y=~y)
+    validate_segment_color(virus_info)
+    default_aes <- aes(x=.data[["x"]], y=.data[["y"]])
 
     virus_capsule <- geom_virus_capsule(default_aes, virus_info, capsule_data, v_color, v_fill, ASP)
 
@@ -167,11 +173,11 @@ geom_hybrid <- function(virus_info, flow_info, v_color="darkgreen", v_fill="stee
 
     virus_link <- NULL
     if (!is.null(flow_info)) {
-        if (!all(c('from', 'to') %in% colnames(flow_info)))
-            stop("'from' and 'to' columns are required in 'flow_info'...")
+        validate_flow_info(flow_info, virus_info$id)
 
         d <- generate_segment_data(virus_info, flow_info, capsule_data, ASP)
-        virus_link <- geom_segment(aes_(x=~x, xend=~xend, y=~y, yend=~yend), data=d, arrow=arrow(length=unit(.3, 'cm')), color=l_color)
+        virus_link <- geom_segment(aes(x=.data[["x"]], xend=.data[["xend"]], y=.data[["y"]], yend=.data[["yend"]]),
+                                   data=d, arrow=arrow(length=unit(.3, 'cm')), color=l_color)
     }
 
     virus_label <- NULL
@@ -188,7 +194,8 @@ geom_hybrid <- function(virus_info, flow_info, v_color="darkgreen", v_fill="stee
             family <- 'sans'
         }
 
-        virus_label <- geom_text(aes_(x=~x, y=~y, label=~label, vjust=~vjust, hjust=~hjust),
+        virus_label <- geom_text(aes(x=.data[["x"]], y=.data[["y"]], label=.data[["label"]],
+                                     vjust=.data[["vjust"]], hjust=.data[["hjust"]]),
                                  data=ld, parse=parse, family=family, size=t_size,
                                  color=t_color, inherit.aes=FALSE)
     }
@@ -209,7 +216,7 @@ geom_virus_capsule <- function(mapping, virus_info, hex_data, color, fill, ASP=1
             stop("color variable not available...")
         }
         hex.df[, vcol] <- virus_info[[vcol]][match(hex.df$id, virus_info$id)]
-        mapping <- modifyList(mapping, aes_(color=color))
+        mapping <- modifyList(mapping, aes(color=.data[[vcol]]))
     }
 
     if (typeof(fill) == "language") {
@@ -218,11 +225,11 @@ geom_virus_capsule <- function(mapping, virus_info, hex_data, color, fill, ASP=1
             stop("fill variable not available...")
         }
         hex.df[,vf] <- virus_info[[vf]][match(hex.df$id, virus_info$id)]
-        mapping <- modifyList(mapping, aes_(fill=fill))
+        mapping <- modifyList(mapping, aes(fill=.data[[vf]]))
     }
-    mapping <- modifyList(mapping, aes_(group=~id))
+    mapping <- modifyList(mapping, aes(group=.data[["id"]]))
 
-    params <- list(mapping=mapping, data=hex.df, alpha=alpha, size=size, inherit.aes=FALSE)
+    params <- list(mapping=mapping, data=hex.df, alpha=alpha, linewidth=size, inherit.aes=FALSE)
     if (typeof(color) == "character") {
         params <- modifyList(list(color=color), params)
     }
@@ -269,7 +276,8 @@ geom_gene_segment <- function(hexd, color, height=0.68, g_height=0.65, g_width=0
 
     dd <- split(d, d$color)
     lapply(seq_along(dd), function(i)
-        geom_rect(aes_(xmin=~xmin, ymin=~ymin, xmax=~xmax, ymax=~ymax),
+          geom_rect(aes(xmin=.data[["xmin"]], ymin=.data[["ymin"]],
+                        xmax=.data[["xmax"]], ymax=.data[["ymax"]]),
                   data= dd[[i]], fill=dd[[i]]$color[1], inherit.aes=FALSE, show.legend=FALSE)
         )
 }
@@ -295,6 +303,24 @@ set_virus_size <- function(virus_info, ASP, v_shape="ellipse") {
         virus_info$virus_size <- virus_info$virus_size * .5
 
     return(virus_info)
+}
+
+
+validate_flow_info <- function(flow_info, virus_id) {
+    if (!all(c("from", "to") %in% colnames(flow_info)))
+        stop("'from' and 'to' columns are required in 'flow_info'...")
+
+    flow_id <- unique(c(flow_info$from, flow_info$to))
+    missing_id <- setdiff(flow_id, virus_id)
+    if (length(missing_id) > 0)
+        stop("all 'from' and 'to' ids in 'flow_info' must exist in 'virus_info$id'...")
+}
+
+
+validate_segment_color <- function(virus_info) {
+    segment_length <- lengths(virus_info$segment_color)
+    if (any(segment_length == 0))
+        stop("each 'segment_color' entry in 'virus_info' must contain at least one color...")
 }
 
 

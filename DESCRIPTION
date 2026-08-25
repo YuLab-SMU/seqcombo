@@ -1,26 +1,29 @@
 Package: seqcombo
-Title: Visualization Tool for Genetic Reassortment
-Version: 1.35.0
+Title: Visualization of Viral Genetic Reassortment
+Version: 1.35.1
 Authors@R: person("Guangchuang", "Yu", email = "guangchuangyu@gmail.com", role = c("aut", "cre"))
-Description: Provides useful functions for visualizing virus reassortment events.
+Description: Provides ggplot2-based tools for visualizing viral genetic reassortment, including genotype diagrams, reassortment flows, and layout utilities for segment-level plots.
 Depends:
     R (>= 3.4.0)
 Imports:
     ggplot2,
     grid,
     igraph,
+    rlang,
     utils,
     yulab.utils
 Suggests:
     emojifont,
     knitr,
+    quarto,
     rmarkdown,
     prettydoc,
     tibble
-VignetteBuilder: knitr
+VignetteBuilder: quarto
+SystemRequirements: Quarto command line tools
 ByteCompile: true
 License: Artistic-2.0
 Encoding: UTF-8
-BugReports: https://github.com/GuangchuangYu/seqcombo/issues
+BugReports: https://github.com/YuLab-SMU/seqcombo/issues
 biocViews: Alignment, Software, Visualization
 RoxygenNote: 7.3.0
