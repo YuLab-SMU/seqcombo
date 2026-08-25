@@ -59,13 +59,9 @@ reassortment events.
 
 
 ```{r fig.width=8, fig.height=7}
-library(tibble)
-library(ggplot2)
-
-
 n <- 8
 
-virus_info <- tibble(
+virus_info <- build_virus_info(
     id = 1:7,
     x = c(rep(1990, 4), rep(2000, 2), 2009),
     y = c(1,2,3,5, 1.5, 3, 4),
@@ -79,8 +75,8 @@ virus_info <- tibble(
         c('darkgreen', 'lightgreen', 'lightgreen', 'darkgreen', 'darkgreen', 'purple', 'red', 'purple'))
 )
 
-flow_info <- tibble(from = c(1,2,3,3,4,5,6),
-                    to = c(5,5,5,6,7,6,7))
+flow_info <- build_flow_info(from = c(1,2,3,3,4,5,6),
+                             to = c(5,5,5,6,7,6,7))
 hybrid_plot(virus_info, flow_info)
 ```
 
@@ -177,6 +173,21 @@ virus_info$y <- x
 virus_info$label_position <- c(rep("right", 3), "left", "left", "right", "right")
 hybrid_plot(virus_info, flow_info, v_color=~Host, v_fill=~Host) +
     scale_y_reverse() + scale_x_continuous(limits=c(0, 5.5))
+```
+
+When your x-axis already encodes time, you can preserve it and only arrange the
+y positions automatically:
+
+```{r fig.width=9, fig.height=7}
+virus_time <- build_virus_info(
+    id = 1:7,
+    x = c(rep(1990, 4), rep(2000, 2), 2009),
+    segment_color = virus_info$segment_color,
+    label = virus_info$label,
+    label_position = rep("upper", 7)
+)
+virus_time <- set_layout(virus_time, flow_info, preserve_x = TRUE)
+hybrid_plot(virus_time, flow_info, link_style = "curve")
 ```
 
 

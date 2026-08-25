@@ -4,19 +4,24 @@
 \name{seqcombo-package}
 \alias{seqcombo}
 \alias{seqcombo-package}
-\title{seqcombo: Visualization Tool for Genetic Reassortment}
+\title{seqcombo: Visualization of Viral Genetic Reassortment}
 \description{
-Provides useful functions for visualizing virus reassortment events.
+Provides ggplot2-based tools for visualizing viral genetic reassortment, including genotype diagrams, reassortment flows, and layout utilities for segment-level plots.
 }
 \seealso{
 Useful links:
 \itemize{
-  \item Report bugs at \url{https://github.com/GuangchuangYu/seqcombo/issues}
+  \item Report bugs at \url{https://github.com/YuLab-SMU/seqcombo/issues}
 }
 
 }
 \author{
 \strong{Maintainer}: Guangchuang Yu \email{guangchuangyu@gmail.com}
+
+Authors:
+\itemize{
+  \item Guangchuang Yu \email{guangchuangyu@gmail.com}
+}
 
 }
 \keyword{internal}
