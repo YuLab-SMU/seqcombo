@@ -3,6 +3,8 @@
 + improve ggplot2 compatibility by replacing deprecated `aes_()` usage and switching line border sizing to `linewidth`
 + add validation for `flow_info` ids and empty `segment_color` entries, and preserve existing coordinates for nodes not present in `flow_info`
 + add `build_virus_info()` and `build_flow_info()` helpers, `set_layout(..., preserve_x / preserve_y)`, and curved reassortment links
++ add `build_flow_info_from_long()`, segment labels inside virus glyphs, and `build_segment_caption()` for figure annotations
++ add link aesthetics mapped from `flow_info`, a dedicated `layout_timeline()` helper, and faceting support via `facet_by`
 + refresh package metadata, including the package title, description, and `BugReports` URL, and add the `rlang` import
 + migrate the package vignette from `.Rmd` to Quarto `.qmd` and update the vignette build workflow
 + standardize historical `NEWS.md` entries and fix typos for older releases

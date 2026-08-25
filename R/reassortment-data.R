@@ -4,6 +4,7 @@
 ##'
 ##' @param id unique virus identifiers
 ##' @param segment_color a list-column of segment colors, one entry per virus
+##' @param segment_name optional list-column of segment names, one entry per virus
 ##' @param x,y optional x/y coordinates
 ##' @param virus_size optional relative virus sizes
 ##' @param label optional text labels
@@ -13,11 +14,12 @@
 ##' @return a `virus_info` data frame
 ##' @export
 ##' @author Guangchuang Yu
-build_virus_info <- function(id, segment_color, x = NULL, y = NULL,
+build_virus_info <- function(id, segment_color, segment_name = NULL, x = NULL, y = NULL,
                              virus_size = NULL, label = NULL,
                              label_position = NULL, ...) {
     n <- length(id)
     segment_color <- normalize_segment_color(segment_color, n)
+    segment_name <- normalize_segment_name(segment_name, n)
 
     virus_info <- data.frame(
         id = id,
@@ -27,6 +29,9 @@ build_virus_info <- function(id, segment_color, x = NULL, y = NULL,
         virus_size = normalize_optional_column(virus_size, n, 1, "virus_size"),
         stringsAsFactors = FALSE
     )
+    if (!is.null(segment_name)) {
+        virus_info$segment_name <- I(segment_name)
+    }
 
     if (!is.null(label) || !is.null(label_position)) {
         virus_info$label <- normalize_optional_column(label, n, NA_character_, "label")
@@ -42,6 +47,7 @@ build_virus_info <- function(id, segment_color, x = NULL, y = NULL,
 
     validate_virus_info(virus_info, require_coordinates = FALSE)
     validate_segment_color(virus_info)
+    validate_segment_name(virus_info)
     virus_info
 }
 
@@ -73,6 +79,56 @@ build_flow_info <- function(from, to, ...) {
 
     validate_flow_info(flow_info, virus_id = NULL)
     flow_info
+}
+
+
+##' Build reassortment edge metadata from long-format records
+##'
+##' Aggregate long-format reassortment records into a `flow_info` data frame.
+##'
+##' @param data a data frame with one row per reassortment record
+##' @param from column name containing source virus identifiers
+##' @param to column name containing target virus identifiers
+##' @param segment optional column name containing segment identifiers
+##' @param weight optional column name containing edge weights to sum
+##' @param keep optional character vector of additional per-edge columns to keep
+##' @return a `flow_info` data frame
+##' @export
+##' @author Guangchuang Yu
+build_flow_info_from_long <- function(data, from = "from", to = "to",
+                                      segment = NULL, weight = NULL,
+                                      keep = NULL) {
+    require_columns(data, c(from, to))
+
+    key <- paste(data[[from]], data[[to]], sep = "\r")
+    split_data <- split(data, key, drop = TRUE)
+
+    edge_info <- data.frame(
+        from = vapply(split_data, function(d) d[[from]][1], FUN.VALUE = data[[from]][1]),
+        to = vapply(split_data, function(d) d[[to]][1], FUN.VALUE = data[[to]][1]),
+        stringsAsFactors = FALSE
+    )
+
+    args <- list(from = edge_info$from, to = edge_info$to)
+
+    if (!is.null(segment)) {
+        require_columns(data, segment)
+        args$segment_name <- lapply(split_data, function(d) unique(as.character(d[[segment]])))
+    }
+
+    if (!is.null(weight)) {
+        require_columns(data, weight)
+        args$weight <- vapply(split_data, function(d) sum(d[[weight]], na.rm = TRUE), FUN.VALUE = numeric(1))
+    }
+
+    if (!is.null(keep) && length(keep) > 0) {
+        require_columns(data, keep)
+        for (col in keep) {
+            args[[col]] <- vapply(split_data, function(d) unique_scalar(d[[col]], col), FUN.VALUE = data[[col]][1])
+        }
+    }
+
+    do.call(build_flow_info, args)
 }
 
 
@@ -113,6 +169,7 @@ build_virus_info_from_long <- function(data, id = "id", segment = "segment",
     split_data <- split(data, data[[id]], drop = TRUE)
 
     segment_color <- lapply(split_data, function(d) d[[color]])
+    segment_name <- lapply(split_data, function(d) as.character(d[[segment]]))
     ids <- names(split_data)
 
     per_virus <- data.frame(id = ids, stringsAsFactors = FALSE)
@@ -142,6 +199,7 @@ build_virus_info_from_long <- function(data, id = "id", segment = "segment",
     args <- list(
         id = per_virus$id,
         segment_color = segment_color,
+        segment_name = segment_name,
         x = per_virus$x,
         y = per_virus$y,
         virus_size = per_virus$virus_size,
@@ -200,6 +258,25 @@ normalize_segment_color <- function(segment_color, n) {
 }
 
 
+normalize_segment_name <- function(segment_name, n) {
+    if (is.null(segment_name)) {
+        return(NULL)
+    }
+    if (!is.list(segment_name)) {
+        if (length(segment_name) != n) {
+            stop("'segment_name' must be a list with one entry per virus...")
+        }
+        segment_name <- as.list(segment_name)
+    }
+
+    if (length(segment_name) != n) {
+        stop("'segment_name' must be a list with one entry per virus...")
+    }
+
+    lapply(segment_name, as.character)
+}
+
+
 normalize_label_position <- function(label_position, n) {
     label_position <- normalize_optional_column(label_position, n, "none", "label_position")
     label_position <- tolower(label_position)
@@ -232,4 +309,25 @@ unique_scalar <- function(x, name) {
         stop(sprintf("column '%s' must have a single value per virus...", name))
     }
     x[[1]]
+}
+
+
+##' Build a segment caption string
+##'
+##' Create a compact caption that lists segment names in order.
+##'
+##' @param segment_name a character vector of segment names
+##' @param prefix prefix text used before the segment names
+##' @return a single caption string
+##' @export
+##' @author Guangchuang Yu
+build_segment_caption <- function(segment_name, prefix = "Gene segments: ") {
+    if (is.list(segment_name)) {
+        segment_name <- segment_name[[1]]
+    }
+    segment_name <- as.character(segment_name)
+    if (length(segment_name) == 0) {
+        stop("'segment_name' must contain at least one segment name...")
+    }
+    paste0(prefix, paste(segment_name, collapse = ", "))
 }

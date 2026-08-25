@@ -40,6 +40,19 @@ validate_segment_color <- function(virus_info) {
 }
 
 
+validate_segment_name <- function(virus_info) {
+    if (!"segment_name" %in% colnames(virus_info)) {
+        return(invisible(TRUE))
+    }
+
+    segment_length <- lengths(virus_info$segment_color)
+    name_length <- lengths(virus_info$segment_name)
+    if (any(name_length != segment_length)) {
+        stop("each 'segment_name' entry must have the same length as its 'segment_color' entry...")
+    }
+}
+
+
 validate_link_style <- function(link_style) {
     match.arg(link_style, c("segment", "curve", "elbow"))
 }

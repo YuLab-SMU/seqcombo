@@ -56,3 +56,44 @@ set_layout <- function(virus_info, flow_info, layout = "layout.auto",
 
     virus_info
 }
+
+
+##' Layout reassortment plots on a timeline
+##'
+##' Keep temporal coordinates on one axis and automatically place viruses on the
+##' other axis.
+##'
+##' @title layout_timeline
+##' @param virus_info virus information
+##' @param flow_info flow information
+##' @param time_col column name in `virus_info` that contains temporal order
+##' @param axis which axis should preserve time, one of `x` or `y`
+##' @param decreasing whether to reverse the automatically computed axis
+##' @return updated `virus_info`
+##' @export
+##' @author Guangchuang Yu
+layout_timeline <- function(virus_info, flow_info, time_col = "x",
+                            axis = c("x", "y"), decreasing = FALSE) {
+    axis <- match.arg(axis)
+    if (!time_col %in% colnames(virus_info)) {
+        stop(sprintf("'%s' column is required in 'virus_info'...", time_col))
+    }
+
+    preserve_x <- axis == "x"
+    preserve_y <- axis == "y"
+    virus_info <- set_layout(
+        virus_info = virus_info,
+        flow_info = flow_info,
+        preserve_x = preserve_x,
+        preserve_y = preserve_y
+    )
+
+    virus_info[[axis]] <- virus_info[[time_col]]
+    other_axis <- if (axis == "x") "y" else "x"
+    if (decreasing) {
+        virus_info[[other_axis]] <- max(virus_info[[other_axis]], na.rm = TRUE) -
+            virus_info[[other_axis]]
+    }
+
+    virus_info
+}

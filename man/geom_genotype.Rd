@@ -12,7 +12,10 @@ geom_genotype(
   l_color = "black",
   asp = 1,
   g_height = 0.65,
-  g_width = 0.65
+  g_width = 0.65,
+  show_segment_label = FALSE,
+  segment_text_size = 2.5,
+  segment_text_color = "black"
 )
 }
 \arguments{
@@ -33,6 +36,12 @@ geom_genotype(
 \item{g_height}{height of regions to plot gene segments relative to the virus}
 
 \item{g_width}{width of gene segment relative to width of the virus}
+
+\item{show_segment_label}{whether to draw segment names inside each virus}
+
+\item{segment_text_size}{size of segment labels}
+
+\item{segment_text_color}{color of segment labels}
 }
 \value{
 geom layer

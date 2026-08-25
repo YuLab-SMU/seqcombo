@@ -7,6 +7,7 @@
 build_virus_info(
   id,
   segment_color,
+  segment_name = NULL,
   x = NULL,
   y = NULL,
   virus_size = NULL,
@@ -19,6 +20,8 @@ build_virus_info(
 \item{id}{unique virus identifiers}
 
 \item{segment_color}{a list-column of segment colors, one entry per virus}
+
+\item{segment_name}{optional list-column of segment names, one entry per virus}
 
 \item{x, y}{optional x/y coordinates}
 

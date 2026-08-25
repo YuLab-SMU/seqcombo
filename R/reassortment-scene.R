@@ -2,6 +2,7 @@ prepare_reassortment_scene <- function(virus_info, flow_info = NULL, asp = 1,
                                        v_shape = "ellipse") {
     validate_virus_info(virus_info, require_coordinates = TRUE)
     validate_segment_color(virus_info)
+    validate_segment_name(virus_info)
 
     if (!is.null(flow_info)) {
         validate_flow_info(flow_info, virus_info$id)
@@ -19,6 +20,10 @@ prepare_reassortment_scene <- function(virus_info, flow_info = NULL, asp = 1,
     flow_data <- NULL
     if (!is.null(flow_info)) {
         flow_data <- route_reassortment_edges(virus_info, flow_info, capsule_data, ASP)
+        extra_flow_col <- setdiff(colnames(flow_info), c("from", "to"))
+        if (length(extra_flow_col) > 0) {
+            flow_data <- cbind(flow_data, flow_info[, extra_flow_col, drop = FALSE])
+        }
     }
 
     list(

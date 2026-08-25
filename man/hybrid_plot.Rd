@@ -11,12 +11,19 @@ hybrid_plot(
   v_fill = "steelblue",
   v_shape = "ellipse",
   l_color = "black",
+  l_alpha = 1,
+  l_width = 0.5,
+  l_linetype = 1,
+  facet_by = NULL,
   asp = 1,
   parse = FALSE,
   g_height = 0.65,
   g_width = 0.65,
   t_size = 3.88,
   t_color = "black",
+  show_segment_label = FALSE,
+  segment_text_size = 2.5,
+  segment_text_color = "black",
   link_style = "segment",
   link_curvature = 0.15,
   link_elbow_position = 0.5
@@ -37,6 +44,14 @@ hybrid_plot(
 
 \item{l_color}{color of the lines that indicate genetic flow}
 
+\item{l_alpha}{transparency of reassortment links; can use expression}
+
+\item{l_width}{line width of reassortment links; can use expression}
+
+\item{l_linetype}{line type of reassortment links; can use expression}
+
+\item{facet_by}{optional column in `virus_info` used to facet the plot}
+
 \item{asp}{aspect ratio of the plotting device}
 
 \item{parse}{whether parse label, only works if `label` and
@@ -49,6 +64,12 @@ hybrid_plot(
 \item{t_size}{size of text label}
 
 \item{t_color}{color of text label}
+
+\item{show_segment_label}{whether to draw segment names inside each virus}
+
+\item{segment_text_size}{size of segment labels}
+
+\item{segment_text_color}{color of segment labels}
 
 \item{link_style}{one of `segment`, `curve`, or `elbow`}
 

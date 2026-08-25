@@ -147,7 +147,7 @@ to modify the details.
 
 ```{r fig.width=7.5, fig.height=7}
 title <- "Reassortment events in evolution of the 2009 influenza A (H1N1) virus"
-caption <- 'Gene segments: PB2, PB1, PA, HA, NP, NA, M, NS'
+caption <- build_segment_caption(c("PB2", "PB1", "PA", "HA", "NP", "NA", "M", "NS"))
 color <- c(Avian="purple", Human="red", Swine="darkgreen")
 
 hybrid_plot(virus_info, flow_info, v_color=~Host, v_fill=~Host) +
@@ -211,6 +211,54 @@ build_virus_info_from_long(
 )
 ```
 
+You can construct `flow_info` from long-format reassortment records as well:
+
+```{r}
+flow_long <- data.frame(
+    from = c(1, 1, 2, 3, 3, 4),
+    to = c(5, 5, 5, 6, 7, 7),
+    segment = c("PB2", "HA", "NA", "PB1", "NP", "M"),
+    support = c(1, 1, 2, 1, 1, 1)
+)
+
+build_flow_info_from_long(
+    flow_long,
+    segment = "segment",
+    weight = "support"
+)
+```
+
+If your `virus_info` carries segment names, you can show them directly inside
+the virus glyphs:
+
+```{r fig.width=10, fig.height=8}
+segment_table <- do.call(rbind, lapply(seq_len(nrow(virus_info)), function(i) {
+    data.frame(
+        id = virus_info$id[i],
+        segment = c("PB2", "PB1", "PA", "HA", "NP", "NA", "M", "NS"),
+        color = virus_info$segment_color[[i]],
+        x = virus_info$x[i],
+        y = virus_info$y[i],
+        stringsAsFactors = FALSE
+    )
+}))
+
+virus_labeled <- build_virus_info_from_long(
+    segment_table,
+    x = "x",
+    y = "y",
+    segment_order = c("PB2", "PB1", "PA", "HA", "NP", "NA", "M", "NS")
+)
+virus_labeled$virus_size <- virus_info$virus_size
+
+hybrid_plot(
+    virus_labeled,
+    flow_info,
+    show_segment_label = TRUE,
+    segment_text_size = 2.5
+)
+```
+
 If you want temporal flows to read more like a timeline, elbow links can make
 the transitions easier to follow:
 
@@ -223,8 +271,52 @@ hybrid_plot(
 )
 ```
 
+Flow metadata can also drive line appearance. Here we map support to line width
+and segment count to transparency:
 
-User can also use Emoji to label the virus (host information in this example):
+```{r fig.width=9, fig.height=7}
+flow_strength <- build_flow_info_from_long(
+    flow_long,
+    segment = "segment",
+    weight = "support"
+)
+flow_strength$alpha <- c(0.5, 0.7, 0.9, 0.7, 0.8)
+
+hybrid_plot(
+    virus_time,
+    flow_strength,
+    link_style = "elbow",
+    l_width = ~weight,
+    l_alpha = ~alpha
+)
+```
+
+The `layout_timeline()` helper keeps the temporal axis fixed while arranging the
+other axis automatically:
+
+```{r fig.width=9, fig.height=7}
+virus_timeline <- layout_timeline(virus_time, flow_info, time_col = "x")
+hybrid_plot(virus_timeline, flow_info, link_style = "curve")
+```
+
+If both `virus_info` and `flow_info` carry a grouping variable, you can facet
+reassortment histories by group:
+
+```{r fig.width=10, fig.height=7}
+virus_time$Lineage <- c("North America", "North America", "North America",
+                        "Europe", "North America", "North America", "North America")
+flow_grouped <- flow_info
+flow_grouped$Lineage <- virus_time$Lineage[match(flow_grouped$to, virus_time$id)]
+
+hybrid_plot(
+    virus_time,
+    flow_grouped,
+    link_style = "curve",
+    facet_by = "Lineage"
+)
+```
+
+
 
 ```{r fig.width=8, fig.height=7, fig.showtext=TRUE}
 virus_info$label <- c("chicken", "woman", "pig", "pig", "pig", "pig", "woman")

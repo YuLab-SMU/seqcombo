@@ -6,6 +6,12 @@
 geom_virus_capsule <- function(mapping, virus_info, hex_data, color, fill,
                                alpha = 0.5, linewidth = 1) {
     hex.df <- do.call("rbind", hex_data)
+    keep_col <- setdiff(colnames(virus_info), c("segment_color", "segment_name"))
+    for (col in keep_col) {
+        if (!is.list(virus_info[[col]]) && !col %in% colnames(hex.df)) {
+            hex.df[[col]] <- virus_info[[col]][match(hex.df$id, virus_info$id)]
+        }
+    }
 
     if (typeof(color) == "language") {
         vcol <- all.vars(color)
@@ -44,8 +50,12 @@ geom_virus_capsule <- function(mapping, virus_info, hex_data, color, fill,
 }
 
 
-geom_gene_segment <- function(hexd, color, height = 0.68, g_height = 0.65,
-                              g_width = 0.8) {
+geom_gene_segment <- function(hexd, color, segment_name = NULL, height = 0.68,
+                              g_height = 0.65, g_width = 0.8,
+                              show_segment_label = FALSE,
+                              segment_text_size = 2.5,
+                              segment_text_color = "black",
+                              extra_data = NULL) {
     n <- length(color)
     y <- hexd$y
     yh <- diff(range(y)) / 4 * g_height / 0.5
@@ -69,11 +79,18 @@ geom_gene_segment <- function(hexd, color, height = 0.68, g_height = 0.65,
         xmax = min(xmax - xadj, max(xx)),
         ymin = ymin,
         ymax = ymax,
-        color = rev(color)
+        color = rev(color),
+        label = if (is.null(segment_name)) NA_character_ else rev(segment_name),
+        stringsAsFactors = FALSE
     )
+    if (!is.null(extra_data) && nrow(extra_data) == 1) {
+        for (col in colnames(extra_data)) {
+            d[[col]] <- extra_data[[col]][1]
+        }
+    }
 
     dd <- split(d, d$color)
-    lapply(seq_along(dd), function(i) {
+    segment_rect <- lapply(seq_along(dd), function(i) {
         geom_rect(
             aes(xmin = .data[["xmin"]], ymin = .data[["ymin"]],
                 xmax = .data[["xmax"]], ymax = .data[["ymax"]]),
@@ -83,6 +100,36 @@ geom_gene_segment <- function(hexd, color, height = 0.68, g_height = 0.65,
             show.legend = FALSE
         )
     })
+
+    if (!show_segment_label || all(is.na(d$label))) {
+        return(segment_rect)
+    }
+
+    label_data <- data.frame(
+        x = (d$xmin + d$xmax) / 2,
+        y = (d$ymin + d$ymax) / 2,
+        label = d$label,
+        stringsAsFactors = FALSE
+    )
+    if (!is.null(extra_data) && nrow(extra_data) == 1) {
+        for (col in colnames(extra_data)) {
+            label_data[[col]] <- extra_data[[col]][1]
+        }
+    }
+
+    c(
+        segment_rect,
+        list(
+            geom_text(
+                aes(x = .data[["x"]], y = .data[["y"]], label = .data[["label"]]),
+                data = label_data,
+                inherit.aes = FALSE,
+                size = segment_text_size,
+                color = segment_text_color,
+                show.legend = FALSE
+            )
+        )
+    )
 }
 
 
