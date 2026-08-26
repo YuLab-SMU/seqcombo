@@ -316,10 +316,29 @@ hybrid_plot(
 )
 ```
 
+For a shorter workflow, you can bundle inputs into a `seqcombo_data` object,
+validate them, and call `autoplot()` directly:
+
+```{r fig.width=9, fig.height=7}
+demo_data <- example_seqcombo_data("timeline")
+check_seqcombo_data(demo_data)
+
+ggplot2::autoplot(
+    demo_data,
+    v_color = ~Host,
+    v_fill = ~Host,
+    link_style = "curve"
+) +
+    theme_seqcombo_pub() +
+    ggplot2::labs(
+        title = "Reassortment example",
+        caption = build_segment_caption(demo_data$virus_info$segment_name)
+    )
+```
+
 
 
 ```{r fig.width=8, fig.height=7, fig.showtext=TRUE}
-virus_info$label <- c("chicken", "woman", "pig", "pig", "pig", "pig", "woman")
 hybrid_plot(virus_info, flow_info, v_color=~Host, v_fill=~Host,
               parse='emoji', t_size=8, t_color='firebrick') +
     scale_y_reverse()
