@@ -220,6 +220,15 @@ hybrid_plot(virus_info, flow_info, v_color=~Host, v_fill=~Host) +
           )
 ```
 
+When coloring viruses by their host of origin, the manual scales above can be
+replaced by the built-in host presets from `scale_seqcombo_host()`:
+
+```{r fig.width=7.5, fig.height=7}
+hybrid_plot(virus_info, flow_info, v_color=~Host, v_fill=~Host) +
+    scale_seqcombo_host()
+```
+
+
 Top-down or bottom-up style is also supported.
 
 ```{r fig.width=9, fig.height=7}

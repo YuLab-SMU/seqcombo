@@ -129,15 +129,14 @@ That is the complete workflow: two tables in, one figure out.
 
 ## Polishing the figure
 
-Host colors work better with explicit scales, and `build_segment_caption()`
-turns segment names into a readable caption:
+Host colors work better with an explicit palette. The built-in
+`scale_seqcombo_host()` wires both `colour` and `fill` aesthetics to a curated
+host palette, and `build_segment_caption()` turns segment names into a readable
+caption:
 
 ```{r fig.width=9, fig.height=6}
 autoplot(data, v_color = ~host, v_fill = ~host, link_style = "curve") +
-    scale_color_manual(values = c(Avian = "purple", Human = "red",
-                                  Swine = "darkgreen")) +
-    scale_fill_manual(values = c(Avian = "purple", Human = "red",
-                                 Swine = "darkgreen")) +
+    scale_seqcombo_host() +
     labs(title = "Reassortment events leading to the 2009 H1N1 pandemic",
          caption = build_segment_caption(c("PB2", "PB1", "PA", "HA",
                                            "NP", "NA", "M", "NS"))) +
