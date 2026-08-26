@@ -34,8 +34,20 @@ jobs:
       - name: Install R package dependencies
         shell: Rscript {0}
         run: |
-          install.packages(c("BiocManager", "remotes"), repos = "https://cloud.r-project.org")
-          remotes::install_deps(dependencies = TRUE, repos = "https://cloud.r-project.org")
+          install.packages(
+            c("BiocManager", "remotes", "rmarkdown", "quarto"),
+            repos = "https://cloud.r-project.org"
+          )
+          remotes::install_github(
+            "YuLab-SMU/yulab.utils",
+            dependencies = TRUE,
+            upgrade = "never"
+          )
+          remotes::install_deps(
+            dependencies = TRUE,
+            repos = "https://cloud.r-project.org",
+            upgrade = "never"
+          )
 
       - name: Build vignette site
         run: make vignette
