@@ -7,7 +7,7 @@
 set_layout(
   virus_info,
   flow_info,
-  layout = "layout.auto",
+  layout = "layout_nicely",
   preserve_x = FALSE,
   preserve_y = FALSE
 )

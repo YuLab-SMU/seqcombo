@@ -9,11 +9,11 @@
 ##' @return updated `virus_info`
 ##' @importFrom igraph graph_from_data_frame
 ##' @importFrom igraph V
-##' @importFrom igraph layout.auto
+##' @importFrom igraph layout_nicely
 ##' @importFrom yulab.utils get_fun_from_pkg
 ##' @export
 ##' @author Guangchuang Yu
-set_layout <- function(virus_info, flow_info, layout = "layout.auto",
+set_layout <- function(virus_info, flow_info, layout = "layout_nicely",
                        preserve_x = FALSE, preserve_y = FALSE) {
     if (preserve_x && preserve_y) {
         stop("'preserve_x' and 'preserve_y' cannot both be TRUE...")

@@ -18,6 +18,7 @@ Suggests:
     quarto,
     rmarkdown,
     prettydoc,
+    testthat (>= 3.0.0),
     tibble
 VignetteBuilder: quarto
 SystemRequirements: Quarto command line tools
@@ -27,3 +28,4 @@ Encoding: UTF-8
 BugReports: https://github.com/YuLab-SMU/seqcombo/issues
 biocViews: Alignment, Software, Visualization
 Config/roxygen2/version: 8.0.0
+Config/testthat/edition: 3
