@@ -39,7 +39,16 @@ jobs:
           needs: vignettes
 
       - name: Build vignette site
-        run: make vignette
+        shell: bash
+        run: |
+          QUARTO_CACHE="$GITHUB_WORKSPACE/.quarto-cache"
+          QUARTO_LIB="$GITHUB_WORKSPACE/.quarto-lib"
+          mkdir -p "$QUARTO_CACHE" "$QUARTO_LIB" .site
+          QUARTO_R_LIBS=$(QUARTO_LIB="$QUARTO_LIB" Rscript -e 'cat(paste(c(normalizePath(Sys.getenv("QUARTO_LIB"), winslash = "/", mustWork = TRUE), .libPaths()), collapse = .Platform$path.sep))')
+          R CMD INSTALL -l "$QUARTO_LIB" .
+          cd vignettes
+          R_LIBS="$QUARTO_R_LIBS" XDG_CACHE_HOME="$QUARTO_CACHE" LOCALAPPDATA="$QUARTO_CACHE" quarto render seqcombo.qmd --to html
+          mv seqcombo.html ../.site/index.html
 
       - name: Publish to gh-pages branch
         uses: peaceiris/actions-gh-pages@v4
