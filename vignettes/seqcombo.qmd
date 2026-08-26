@@ -54,6 +54,56 @@ edit without software tool to automatically generate. Here, I implemented the
 `hybrid_plot` function for producing publication quality figure of
 reassortment events.
 
+For most new projects, the recommended entry point is a table-based workflow:
+
+1. Prepare a long-format virus-segment table.
+2. Build `virus_info` with `build_virus_info_from_long()`.
+3. Build `flow_info` with `build_flow_info_from_long()` when reassortment edges
+   also come from tables.
+4. Wrap both objects with `as_seqcombo_data()`.
+5. Start with `autoplot()` and only switch to `hybrid_plot()` when you need
+   fine-grained control.
+
+```{r fig.width=8, fig.height=6}
+workflow_segments <- data.frame(
+    id = rep(c("avian_1990", "human_1990", "swine_2000"), each = 8),
+    sample_time = rep(c(1990, 1990, 2000), each = 8),
+    segment = rep(c("PB2", "PB1", "PA", "HA", "NP", "NA", "M", "NS"), 3),
+    color = c(
+        rep("purple", 8),
+        rep("red", 8),
+        c("darkgreen", "darkgreen", "red", "darkgreen",
+          "darkgreen", "purple", "red", "purple")
+    ),
+    host = rep(c("Avian", "Human", "Swine"), each = 8),
+    stringsAsFactors = FALSE
+)
+
+workflow_flow <- data.frame(
+    from = c("avian_1990", "human_1990"),
+    to = c("swine_2000", "swine_2000"),
+    segment = c("HA", "NA"),
+    stringsAsFactors = FALSE
+)
+
+workflow_virus <- build_virus_info_from_long(
+    workflow_segments,
+    x = "sample_time",
+    keep = "host"
+)
+workflow_flow <- build_flow_info_from_long(
+    workflow_flow,
+    segment = "segment"
+)
+workflow_virus <- layout_timeline(
+    workflow_virus,
+    workflow_flow,
+    time_col = "x"
+)
+
+workflow_data <- as_seqcombo_data(workflow_virus, workflow_flow)
+autoplot(workflow_data, v_color = ~host, v_fill = ~host, link_style = "curve")
+```
 
 
 

@@ -17,6 +17,10 @@ a ggplot object
 \description{
 Create a reassortment plot directly from a `seqcombo_data` object.
 }
+\examples{
+data <- example_seqcombo_data("timeline")
+ggplot2::autoplot(data, link_style = "curve")
+}
 \author{
 Guangchuang Yu
 }

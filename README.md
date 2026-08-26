@@ -15,7 +15,56 @@ School of Basic Medical Sciences, Southern Medical University
 BiocManager::install("seqcombo")
 ```
 
-## Usages
+## Recommended workflow
+
+For most new analyses, the recommended path is:
+
+1. Start from long-format tables with one row per virus-segment record.
+2. Build `virus_info` and `flow_info` with `build_virus_info_from_long()` and
+   `build_flow_info_from_long()`.
+3. Bundle them with `as_seqcombo_data()`.
+4. Plot with `autoplot()` for a fast default figure, or switch to
+   `hybrid_plot()` when you want full control over aesthetics.
+
+```r
+library(ggplot2)
+library(seqcombo)
+
+segment_df <- data.frame(
+    id = rep(c("avian_1990", "human_1990", "swine_2000"), each = 8),
+    sample_time = rep(c(1990, 1990, 2000), each = 8),
+    segment = rep(c("PB2", "PB1", "PA", "HA", "NP", "NA", "M", "NS"), 3),
+    color = c(
+        rep("purple", 8),
+        rep("red", 8),
+        c("darkgreen", "darkgreen", "red", "darkgreen",
+          "darkgreen", "purple", "red", "purple")
+    ),
+    host = rep(c("Avian", "Human", "Swine"), each = 8),
+    stringsAsFactors = FALSE
+)
+
+flow_df <- data.frame(
+    from = c("avian_1990", "human_1990"),
+    to = c("swine_2000", "swine_2000"),
+    segment = c("HA", "NA"),
+    stringsAsFactors = FALSE
+)
+
+virus_info <- build_virus_info_from_long(
+    segment_df,
+    x = "sample_time",
+    keep = "host"
+)
+flow_info <- build_flow_info_from_long(flow_df, segment = "segment")
+virus_info <- layout_timeline(virus_info, flow_info, time_col = "x")
+
+seqcombo_data <- as_seqcombo_data(virus_info, flow_info)
+
+autoplot(seqcombo_data, v_color = ~host, v_fill = ~host, link_style = "curve")
+```
+
+## Low-level usage
 
 
 ```r

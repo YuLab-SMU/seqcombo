@@ -6,6 +6,10 @@
 ##' @param virus_info virus information
 ##' @param flow_info optional flow information
 ##' @return an object of class `seqcombo_data`
+##' @examples
+##' data <- example_seqcombo_data()
+##' seqcombo_data <- as_seqcombo_data(data$virus_info, data$flow_info)
+##' class(seqcombo_data)
 ##' @export
 ##' @author Guangchuang Yu
 as_seqcombo_data <- function(virus_info, flow_info = NULL) {
@@ -99,6 +103,9 @@ example_seqcombo_data <- function(type = c("basic", "timeline")) {
 ##' @param object a `seqcombo_data` object
 ##' @param ... additional parameters passed to `hybrid_plot()` or `geom_genotype()`
 ##' @return a ggplot object
+##' @examples
+##' data <- example_seqcombo_data("timeline")
+##' ggplot2::autoplot(data, link_style = "curve")
 ##' @importFrom ggplot2 autoplot
 ##' @export
 ##' @author Guangchuang Yu

@@ -18,6 +18,11 @@ an object of class `seqcombo_data`
 Bundle `virus_info` and `flow_info` into a lightweight `seqcombo_data`
 object for validation and autoplot methods.
 }
+\examples{
+data <- example_seqcombo_data()
+seqcombo_data <- as_seqcombo_data(data$virus_info, data$flow_info)
+class(seqcombo_data)
+}
 \author{
 Guangchuang Yu
 }
