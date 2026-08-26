@@ -7,7 +7,7 @@
 ##' @param preserve_x whether to preserve existing x coordinates and only update y
 ##' @param preserve_y whether to preserve existing y coordinates and only update x
 ##' @return updated `virus_info`
-##' @importFrom igraph graph.data.frame
+##' @importFrom igraph graph_from_data_frame
 ##' @importFrom igraph V
 ##' @importFrom igraph layout.auto
 ##' @importFrom yulab.utils get_fun_from_pkg
@@ -33,9 +33,9 @@ set_layout <- function(virus_info, flow_info, layout = "layout.auto",
         layout <- get_fun_from_pkg("igraph", layout)
     }
 
-    g <- graph.data.frame(flow_info[, c("from", "to")])
+    g <- graph_from_data_frame(flow_info[, c("from", "to")])
     coord <- layout(g)
-    i <- match(as.character(V(g)), virus_info$id)
+    i <- match(as.character(V(g)$name), virus_info$id)
 
     if (!"x" %in% colnames(virus_info)) {
         virus_info$x <- NA_real_
