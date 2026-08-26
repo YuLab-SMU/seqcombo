@@ -128,3 +128,13 @@ positions.
 
 ![](vignettes/figures/influenza-example.png)
 
+## Documentation
+
+The package ships with two Quarto vignettes, rendered at
+<https://yulab-smu.github.io/seqcombo/>:
+
+- [Reassortment](https://yulab-smu.github.io/seqcombo/) - a full tour of
+  `hybrid_plot()` and the available customizations.
+- [Timeline workflows](https://yulab-smu.github.io/seqcombo/timeline.html) -
+  plotting time-course reassortment data from long-format tables.
+

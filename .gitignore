@@ -6,5 +6,6 @@
 .quarto-cache
 .quarto-lib
 .site
+.tmplib/
 vignettes/*.html
 vignettes/*_files

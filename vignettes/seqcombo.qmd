@@ -54,6 +54,8 @@ edit without software tool to automatically generate. Here, I implemented the
 `hybrid_plot` function for producing publication quality figure of
 reassortment events.
 
+# Recommended workflow
+
 For most new projects, the recommended entry point is a table-based workflow:
 
 1. Prepare a long-format virus-segment table.
@@ -108,6 +110,8 @@ autoplot(workflow_data, v_color = ~host, v_fill = ~host, link_style = "curve")
 
 
 
+# Basic usage of hybrid_plot()
+
 ```{r fig.width=8, fig.height=7}
 n <- 8
 
@@ -141,6 +145,8 @@ phylodynamic study and can be employed to set `x` or `y` to provide more
 information and help interpretation of the reassortment events.
 
 
+
+# Customizing the appearance
 
 We use hexagon to represent virus. Users can set the virus outer boundary color by `v_color` and fill the virus by
 `v_fill`. Color of line segments that indicate the genetic flow relationship can
@@ -240,6 +246,8 @@ virus_time <- set_layout(virus_time, flow_info, preserve_x = TRUE)
 hybrid_plot(virus_time, flow_info, link_style = "curve")
 ```
 
+# Building inputs from tables
+
 For workflows that start from long-format segment records, you can build
 `virus_info` directly from a virus-segment table:
 
@@ -320,6 +328,8 @@ build_flow_info_from_long(
     weight = "support"
 )
 ```
+
+# Segment labels inside the glyphs
 
 If your `virus_info` carries segment names, you can show them directly inside
 the virus glyphs:
@@ -430,6 +440,8 @@ ggplot2::autoplot(
 ```
 
 
+
+# Emoji text and automatic layouts
 
 ```{r fig.width=8, fig.height=7, fig.showtext=TRUE}
 hybrid_plot(virus_info, flow_info, v_color=~Host, v_fill=~Host,
