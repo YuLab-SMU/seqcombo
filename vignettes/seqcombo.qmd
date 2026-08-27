@@ -1,6 +1,8 @@
 ---
 title: "seqcombo for visualizing genetic reassortment"
-author: "Guangchuang Yu, School of Basic Medical Sciences, Southern Medical University"
+author: "Guangchuang Yu\\
+
+        School of Basic Medical Sciences, Southern Medical University"
 date: today
 bibliography: seqcombo.bib
 biblio-style: apalike
@@ -15,6 +17,7 @@ vignette: >
   %\VignetteEngine{quarto::html}
   %\VignetteEncoding{UTF-8}
 ---
+
 
 ```{r style, echo=FALSE, results="asis", message=FALSE}
 knitr::opts_chunk$set(tidy = FALSE,
@@ -447,6 +450,30 @@ ggplot2::autoplot(
         caption = build_segment_caption(demo_data$virus_info$segment_name)
     )
 ```
+
+`example_seqcombo_data()` also ships dedicated teaching datasets. Type `"long"`
+starts from tidy tables (attached as `attr(demo, "long_tables")`) and walks
+through the recommended build-and-arrange pipeline, so you can inspect each
+intermediate step:
+
+```{r fig.width=9, fig.height=6}
+long_demo <- example_seqcombo_data("long")
+head(attr(long_demo, "long_tables")$flows)
+
+ggplot2::autoplot(
+    long_demo,
+    v_color = ~sampling_host,
+    v_fill = ~sampling_host,
+    l_width = ~weight,
+    link_style = "curve"
+) +
+    scale_seqcombo_host() +
+    theme_seqcombo_pub()
+```
+
+Type `"genotype"` provides parents plus reassortants without flows, handy for
+genotype-only charts through `geom_genotype()` or
+`autoplot(as_seqcombo_data(virus_info))`.
 
 
 

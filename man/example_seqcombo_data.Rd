@@ -4,16 +4,36 @@
 \alias{example_seqcombo_data}
 \title{Example seqcombo plotting data}
 \usage{
-example_seqcombo_data(type = c("basic", "timeline"))
+example_seqcombo_data(type = c("basic", "timeline", "long", "genotype"))
 }
 \arguments{
-\item{type}{one of `basic` or `timeline`}
+\item{type}{one of `basic`, `timeline`, `long`, or `genotype`. See Details.}
 }
 \value{
 an object of class `seqcombo_data`
 }
 \description{
-Return a ready-to-plot `seqcombo_data` object for demos and tests.
+Return ready-to-plot `seqcombo_data` objects covering common teaching
+scenarios.
+}
+\details{
+Available types:
+\describe{
+  \item{basic}{the classic hybrid reassortment network (numeric ids)}
+  \item{timeline}{same biology arranged by `layout_timeline()`}
+  \item{long}{built from tidy segment/flow tables via
+    `build_virus_info_from_long()` and `build_flow_info_from_long()`; raw
+    tables are attached as `attr(data, "long_tables")`}
+  \item{genotype}{two parents plus two reassortants, without flows, for
+    genotype-only plots via `geom_genotype()`}
+}
+Segment colors in `long` and `genotype` encode ancestral host through
+[apply_seqcombo_palette()], so they pair naturally with
+[scale_seqcombo_host()].
+}
+\examples{
+data <- example_seqcombo_data("long")
+table(attr(data, "long_tables")$flows)
 }
 \author{
 Guangchuang Yu

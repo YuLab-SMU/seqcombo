@@ -1,6 +1,7 @@
 # seqcombo 1.35.1
 
 + add a curated host color palette: `seqcombo_host_palette()`, `apply_seqcombo_palette()` for label-to-color mapping, and `scale_seqcombo_host()` as ready-made colour/fill scales
++ extend `example_seqcombo_data()` with `long` and `genotype` teaching datasets, alongside the existing `basic` and `timeline` variants
 + improve ggplot2 compatibility by replacing deprecated `aes_()` usage and switching line border sizing to `linewidth`
 + add validation for `flow_info` ids and empty `segment_color` entries, and preserve existing coordinates for nodes not present in `flow_info`
 + add `build_virus_info()` and `build_flow_info()` helpers, `set_layout(..., preserve_x / preserve_y)`, and curved reassortment links

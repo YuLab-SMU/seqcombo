@@ -34,3 +34,25 @@ test_that("autoplot.seqcombo_data returns a ggplot for flow and genotype workflo
 
     expect_s3_class(genotype_plot, "ggplot")
 })
+
+test_that("example_seqcombo_data provides a long-format teaching dataset", {
+    data <- example_seqcombo_data("long")
+
+    expect_s3_class(data, "seqcombo_data")
+    expect_true(check_seqcombo_data(data))
+
+    tables <- attr(data, "long_tables")
+    expect_s3_class(tables$segments, "data.frame")
+    expect_s3_class(tables$flows, "data.frame")
+    expect_setequal(
+        unique(tables$segments$id),
+        unique(data$virus_info$id)
+    )
+})
+
+test_that("example_seqcombo_data provides a genotype-only dataset", {
+    data <- example_seqcombo_data("genotype")
+
+    expect_null(data$flow_info)
+    expect_true(check_seqcombo_data(data))
+})
