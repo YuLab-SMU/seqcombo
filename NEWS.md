@@ -13,6 +13,7 @@
 + standardize historical `NEWS.md` entries and fix typos for older releases
 + replace the legacy `docs/`-based GitHub Pages flow with deployment from a dedicated `gh-pages` branch via GitHub Actions
 + remove `deploy.sh` and `seqcombo.Rproj`
++ remove legacy artifacts, including the `outdated/` examples folder, the retired `.travis.yml` config, and unreferenced vignette screenshots
 
 # seqcombo 1.34.0
 

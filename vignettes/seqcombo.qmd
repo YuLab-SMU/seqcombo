@@ -496,22 +496,3 @@ hybrid_plot(virus_info, flow_info, parse='emoji', t_size=8, t_color='firebrick')
 virus_info <- set_layout(virus_info, flow_info, layout="layout.fruchterman.reingold")
 hybrid_plot(virus_info, flow_info, parse='emoji', t_size=8, t_color='firebrick')
 ```
-
-
-
-
-<!--
-In case you don't have xy-coordination information, you can use `igraph` and
-apply you favorite layout algorithm to auto-determine the xy-positions and then
-using them to visualize the reassortment events as shown below:
-
-```{r out.width='75%', echo=F}
-knitr::include_graphics("figures/igraph1.jpeg")
-```
-
-You can also drag the dots for manual adjustment:
-
-```{r out.width='75%', echo=F}
-knitr::include_graphics("figures/igraph2.jpeg")
-```
--->
