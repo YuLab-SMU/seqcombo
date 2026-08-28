@@ -58,9 +58,17 @@ validate_link_style <- function(link_style) {
 }
 
 
-validate_link_elbow_position <- function(link_elbow_position) {
-    if (!is.numeric(link_elbow_position) || length(link_elbow_position) != 1L ||
-        is.na(link_elbow_position) || link_elbow_position <= 0 || link_elbow_position >= 1) {
-        stop("'link_elbow_position' must be a single numeric value between 0 and 1...")
+validate_link_elbow_position <- function(link_elbow_position, n = NULL) {
+    if (!is.numeric(link_elbow_position) ||
+        length(link_elbow_position) == 0L ||
+        anyNA(link_elbow_position) ||
+        any(link_elbow_position <= 0) ||
+        any(link_elbow_position >= 1)) {
+        stop("'link_elbow_position' must be numeric values between 0 and 1...")
     }
+    if (!is.null(n) && length(link_elbow_position) != 1L &&
+        length(link_elbow_position) != n) {
+        stop("length of 'link_elbow_position' must be 1 or the number of flows...")
+    }
+    link_elbow_position
 }

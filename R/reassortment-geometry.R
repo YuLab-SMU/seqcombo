@@ -373,35 +373,48 @@ generate_label_data <- function(virus_info, hex_data) {
         hjust = hjust,
         stringsAsFactors = FALSE
     )
+    ## carry extra metadata columns (e.g. facet variables) so labels
+    ## are dispatched correctly across panels
+    keep <- setdiff(
+        non_list_colnames(virus_info),
+        c("x", "y", "label", "vjust", "hjust")
+    )
+    if (length(keep)) {
+        d <- cbind(d, virus_info[, keep, drop = FALSE])
+    }
     d[!is.na(virus_info$label_position) & virus_info$label_position != "none", , drop = FALSE]
 }
 
 
-generate_elbow_flow_data <- function(flow_data, link_elbow_position = 0.5) {
-    validate_link_elbow_position(link_elbow_position)
+generate_elbow_flow_data <- function(flow_data, link_elbow_position = 0.5,
+                                     elbow_spread = 0.08) {
+    n <- nrow(flow_data)
+    validate_link_elbow_position(link_elbow_position, n = n)
 
-    xmid <- flow_data$x + (flow_data$xend - flow_data$x) * link_elbow_position
+    ## stagger a shared elbow position so that vertical segments of
+    ## different flows do not pile up on top of each other
+    if (length(link_elbow_position) == 1L && n > 1L) {
+        offset <- seq(-(n - 1L) / 2, (n - 1L) / 2, length.out = n)
+        pos <- link_elbow_position + elbow_spread * offset
+    } else {
+        pos <- rep(link_elbow_position, length.out = n)
+    }
+    pos <- pmin(pmax(pos, .Machine$double.eps), 1 - .Machine$double.eps)
 
-    lead <- data.frame(
-        x = flow_data$x,
-        xend = xmid,
-        y = flow_data$y,
-        yend = flow_data$y
-    )
-    middle <- data.frame(
-        x = xmid,
-        xend = xmid,
-        y = flow_data$y,
-        yend = flow_data$yend
-    )
-    tail <- data.frame(
-        x = xmid,
-        xend = flow_data$xend,
-        y = flow_data$yend,
-        yend = flow_data$yend
-    )
+    xmid <- flow_data$x + (flow_data$xend - flow_data$x) * pos
 
-    list(lead = lead, middle = middle, tail = tail)
+    keep <- setdiff(colnames(flow_data), c("x", "xend", "y", "yend"))
+    make_segment <- function(x, xend, y, yend) {
+        seg <- data.frame(x = x, xend = xend, y = y, yend = yend)
+        if (length(keep)) seg <- cbind(seg, flow_data[, keep, drop = FALSE])
+        seg
+    }
+
+    list(
+        lead = make_segment(flow_data$x, xmid, flow_data$y, flow_data$y),
+        middle = make_segment(xmid, xmid, flow_data$y, flow_data$yend),
+        tail = make_segment(xmid, flow_data$xend, flow_data$yend, flow_data$yend)
+    )
 }
 
 

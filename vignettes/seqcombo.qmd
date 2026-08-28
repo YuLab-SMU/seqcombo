@@ -244,7 +244,9 @@ hybrid_plot(virus_info, flow_info, v_color=~Host, v_fill=~Host) +
 ```
 
 When your x-axis already encodes time, you can preserve it and only arrange the
-y positions automatically:
+y positions automatically. Viruses sharing the same time point (here 1990 and
+2000) are spread into evenly spaced slots instead of stacking on top of each
+other:
 
 ```{r fig.width=9, fig.height=7}
 virus_time <- build_virus_info(
@@ -254,7 +256,7 @@ virus_time <- build_virus_info(
     label = virus_info$label,
     label_position = rep("upper", 7)
 )
-virus_time <- set_layout(virus_time, flow_info, preserve_x = TRUE)
+virus_time <- set_layout(virus_time, flow_info, preserve_x = TRUE, spread = TRUE)
 hybrid_plot(virus_time, flow_info, link_style = "curve")
 ```
 
@@ -414,18 +416,17 @@ virus_timeline <- layout_timeline(virus_time, flow_info, time_col = "x")
 hybrid_plot(virus_timeline, flow_info, link_style = "curve")
 ```
 
-If both `virus_info` and `flow_info` carry a grouping variable, you can facet
-reassortment histories by group:
+When `virus_info` carries a grouping variable, you can facet reassortment
+histories by group. Flows that cross facets are drawn in each panel, so
+transitions between lineages remain visible:
 
 ```{r fig.width=10, fig.height=7}
 virus_time$Lineage <- c("North America", "North America", "North America",
                         "Europe", "North America", "North America", "North America")
-flow_grouped <- flow_info
-flow_grouped$Lineage <- virus_time$Lineage[match(flow_grouped$to, virus_time$id)]
 
 hybrid_plot(
     virus_time,
-    flow_grouped,
+    flow_info,
     link_style = "curve",
     facet_by = "Lineage"
 )

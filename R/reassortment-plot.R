@@ -411,13 +411,25 @@ prepare_facet_flow_info <- function(virus_info, flow_info, facet_by) {
 
     from_group <- virus_info[[facet_by]][match(flow_info$from, virus_info$id)]
     to_group <- virus_info[[facet_by]][match(flow_info$to, virus_info$id)]
-    same_group <- is.na(from_group) | is.na(to_group) | from_group == to_group
-    if (!all(same_group)) {
-        stop(sprintf("facet column '%s' must match between source and target viruses, or be provided in 'flow_info'...", facet_by))
+
+    set_panel <- function(i, group) {
+        d <- flow_info[i, , drop = FALSE]
+        d[[facet_by]] <- group
+        d
     }
 
-    flow_info[[facet_by]] <- to_group
-    flow_info
+    rows <- lapply(seq_len(nrow(flow_info)), function(i) {
+        if (identical(from_group[i], to_group[i])) {
+            return(set_panel(i, from_group[i]))
+        }
+        ## flows crossing facets are duplicated and drawn in each panel
+        rbind(
+            set_panel(i, from_group[i]),
+            set_panel(i, to_group[i])
+        )
+    })
+    out <- do.call(rbind, rows)
+    out[!is.na(out[[facet_by]]), , drop = FALSE]
 }
 
 

@@ -6,6 +6,9 @@
 ##' @param layout layout method
 ##' @param preserve_x whether to preserve existing x coordinates and only update y
 ##' @param preserve_y whether to preserve existing y coordinates and only update x
+##' @param spread whether to evenly spread viruses sharing the same preserved
+##' coordinate along the other axis (useful when many viruses share the same
+##' time point)
 ##' @return updated `virus_info`
 ##' @importFrom igraph graph_from_data_frame
 ##' @importFrom igraph V
@@ -14,7 +17,8 @@
 ##' @export
 ##' @author Guangchuang Yu
 set_layout <- function(virus_info, flow_info, layout = "layout_nicely",
-                       preserve_x = FALSE, preserve_y = FALSE) {
+                       preserve_x = FALSE, preserve_y = FALSE,
+                       spread = FALSE) {
     if (preserve_x && preserve_y) {
         stop("'preserve_x' and 'preserve_y' cannot both be TRUE...")
     }
@@ -53,8 +57,56 @@ set_layout <- function(virus_info, flow_info, layout = "layout_nicely",
     if (!preserve_y) {
         virus_info$y[i] <- layout_y
     }
+    if (spread && preserve_x) {
+        virus_info$y[i] <- spread_grouped_values(layout_y, virus_info$x[i])
+    }
+    if (spread && preserve_y) {
+        virus_info$x[i] <- spread_grouped_values(layout_x, virus_info$y[i])
+    }
 
     virus_info
+}
+
+
+##' Arrange values into evenly spaced slots, grouped by `groups`
+##'
+##' Nodes sharing a group occupy consecutive slots (with a gap between
+##' groups), preserving the relative order of the original values. Useful to
+##' spread viruses that share the same time point on a timeline layout.
+##'
+##' @noRd
+spread_grouped_values <- function(values, groups, gap = 1) {
+    n <- length(values)
+    stopifnot(n == length(groups))
+
+    groups_chr <- as.character(groups)
+    groups_chr[is.na(groups_chr)] <- "__NA__"
+    levels_sorted <- sort_unique_key(groups_chr)
+    ord <- order(match(groups_chr, levels_sorted), values)
+
+    breaks <- rle(groups_chr[ord])
+    res <- numeric(n)
+    cursor <- 0
+    start <- 1
+    for (k in breaks$lengths) {
+        idx <- ord[start:(start + k - 1)]
+        res[idx] <- cursor + seq_len(k)
+        cursor <- cursor + k + gap
+        start <- start + k
+    }
+    ## flip so that the first group appears at the top after plotting
+    max_res <- max(res)
+    res <- max_res + 1 - res
+    res
+}
+
+sort_unique_key <- function(chr) {
+    u <- unique(chr)
+    num <- suppressWarnings(as.numeric(u))
+    if (!anyNA(num)) {
+        return(u[order(num)])
+    }
+    sort(u)
 }
 
 
@@ -69,11 +121,14 @@ set_layout <- function(virus_info, flow_info, layout = "layout_nicely",
 ##' @param time_col column name in `virus_info` that contains temporal order
 ##' @param axis which axis should preserve time, one of `x` or `y`
 ##' @param decreasing whether to reverse the automatically computed axis
+##' @param spread whether to evenly spread viruses sharing the same time point
+##' along the other axis
 ##' @return updated `virus_info`
 ##' @export
 ##' @author Guangchuang Yu
 layout_timeline <- function(virus_info, flow_info, time_col = "x",
-                            axis = c("x", "y"), decreasing = FALSE) {
+                            axis = c("x", "y"), decreasing = FALSE,
+                            spread = TRUE) {
     axis <- match.arg(axis)
     if (!time_col %in% colnames(virus_info)) {
         stop(sprintf("'%s' column is required in 'virus_info'...", time_col))
@@ -85,7 +140,8 @@ layout_timeline <- function(virus_info, flow_info, time_col = "x",
         virus_info = virus_info,
         flow_info = flow_info,
         preserve_x = preserve_x,
-        preserve_y = preserve_y
+        preserve_y = preserve_y,
+        spread = spread
     )
 
     virus_info[[axis]] <- virus_info[[time_col]]
