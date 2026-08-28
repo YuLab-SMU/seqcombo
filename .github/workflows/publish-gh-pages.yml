@@ -48,9 +48,7 @@ jobs:
           R CMD INSTALL -l "$QUARTO_LIB" .
           cd vignettes
           R_LIBS="$QUARTO_R_LIBS" XDG_CACHE_HOME="$QUARTO_CACHE" LOCALAPPDATA="$QUARTO_CACHE" quarto render seqcombo.qmd --to html
-          R_LIBS="$QUARTO_R_LIBS" XDG_CACHE_HOME="$QUARTO_CACHE" LOCALAPPDATA="$QUARTO_CACHE" quarto render timeline.qmd --to html
           mv seqcombo.html ../.site/index.html
-          mv timeline.html ../.site/timeline.html
 
       - name: Publish to gh-pages branch
         uses: peaceiris/actions-gh-pages@v4

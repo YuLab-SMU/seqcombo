@@ -283,49 +283,6 @@ build_virus_info_from_long(
 )
 ```
 
-If your data already include sampling time, a convenient pattern is to keep the
-time in a table column and let `layout_timeline()` arrange the other axis. The
-example below starts from a segment-level table with one row per
-virus-segment combination:
-
-```{r fig.width=9, fig.height=7}
-timeline_segments <- data.frame(
-    id = rep(c("avian_1990", "human_1990", "swine_2000", "human_2009"), each = 8),
-    sample_time = rep(c(1990, 1990, 2000, 2009), each = 8),
-    segment = rep(c("PB2", "PB1", "PA", "HA", "NP", "NA", "M", "NS"), 4),
-    color = c(
-        rep("purple", 8),
-        rep("red", 8),
-        c("darkgreen", "darkgreen", "red", "darkgreen", "darkgreen", "purple", "red", "purple"),
-        c("darkgreen", "lightgreen", "lightgreen", "darkgreen",
-          "darkgreen", "purple", "red", "purple")
-    ),
-    host = rep(c("Avian", "Human", "Swine", "Human"), each = 8),
-    stringsAsFactors = FALSE
-)
-
-timeline_flow <- data.frame(
-    from = c("avian_1990", "human_1990", "swine_2000"),
-    to = c("swine_2000", "swine_2000", "human_2009"),
-    stringsAsFactors = FALSE
-)
-
-virus_from_table <- build_virus_info_from_long(
-    timeline_segments,
-    x = "sample_time",
-    keep = "host"
-)
-virus_from_table <- layout_timeline(virus_from_table, timeline_flow, time_col = "x")
-
-hybrid_plot(
-    virus_from_table,
-    timeline_flow,
-    v_color = ~host,
-    v_fill = ~host,
-    link_style = "curve"
-)
-```
-
 You can construct `flow_info` from long-format reassortment records as well:
 
 ```{r}
@@ -342,6 +299,153 @@ build_flow_info_from_long(
     weight = "support"
 )
 ```
+
+# Plotting time-course reassortment data
+
+In a typical reassortment study you know **when** each virus was sampled, but
+you rarely know where it should sit on the canvas. This section walks through
+the full path from two plain tables (one row per virus-segment record, one row
+per reassortment flow) to a publication-ready figure with time on the x-axis.
+If you only want a quick look,
+`example_seqcombo_data("timeline")` returns ready-to-plot demo data.
+
+## Step 1: prepare long-format tables
+
+The first table stores segment records. Each row is one *virus-segment*
+combination:
+
+```{r}
+tl_segments <- data.frame(
+    id = rep(c("avian_1990", "human_1990", "swine_2000", "human_2009"), each = 8),
+    sample_time = rep(c(1990, 1990, 2000, 2009), each = 8),
+    segment = rep(c("PB2", "PB1", "PA", "HA", "NP", "NA", "M", "NS"), 4),
+    color = c(
+        rep("purple", 8),
+        rep("red", 8),
+        c("darkgreen", "darkgreen", "red", "darkgreen",
+          "darkgreen", "purple", "red", "purple"),
+        c("darkgreen", "lightgreen", "lightgreen", "darkgreen",
+          "darkgreen", "purple", "red", "purple")
+    ),
+    host = rep(c("Avian", "Human", "Swine", "Human"), each = 8),
+    stringsAsFactors = FALSE
+)
+head(tl_segments)
+```
+
+The second table stores reassortment flows. `from` and `to` refer to virus ids;
+the optional `segment` column records which segments were donated:
+
+```{r}
+tl_flows <- data.frame(
+    from = c("avian_1990", "human_1990", "swine_2000"),
+    to = c("swine_2000", "swine_2000", "human_2009"),
+    segment = c("HA", "NA", "PB1"),
+    stringsAsFactors = FALSE
+)
+```
+
+## Step 2: build `virus_info` and `flow_info`
+
+At this stage there is no `y` column yet — only sampling time, which we hand to
+the `x` argument as a column name:
+
+```{r}
+tl_virus <- build_virus_info_from_long(tl_segments, x = "sample_time",
+                                       keep = "host")
+
+tl_flow <- build_flow_info_from_long(tl_flows, segment = "segment")
+
+tl_virus[, c("id", "x")]
+```
+
+## Step 3: arrange the timeline
+
+`layout_timeline()` keeps the time axis untouched (`time_col = "x"`) and fills
+in sensible y positions based on the flow network:
+
+```{r}
+tl_virus <- layout_timeline(tl_virus, tl_flow, time_col = "x")
+```
+
+## Step 4: plot
+
+Wrap everything into a `seqcombo_data` object and call `autoplot()`:
+
+```{r fig.width=9, fig.height=6}
+tl_data <- as_seqcombo_data(tl_virus, tl_flow)
+
+autoplot(tl_data, v_color = ~host, v_fill = ~host, link_style = "curve")
+```
+
+That is the complete workflow: two tables in, one figure out.
+
+## Polishing the figure
+
+Host colors work better with an explicit palette. The built-in
+`scale_seqcombo_host()` wires both `colour` and `fill` aesthetics to a curated
+host palette, and `build_segment_caption()` turns segment names into a readable
+caption:
+
+```{r fig.width=9, fig.height=6}
+autoplot(tl_data, v_color = ~host, v_fill = ~host, link_style = "curve") +
+    scale_seqcombo_host() +
+    labs(title = "Reassortment events leading to the 2009 H1N1 pandemic",
+         caption = build_segment_caption(c("PB2", "PB1", "PA", "HA",
+                                           "NP", "NA", "M", "NS"))) +
+    scale_x_continuous(breaks = c(1990, 2000, 2009)) +
+    theme_seqcombo_pub()
+```
+
+Labels can be added by attaching `label` and `label_position` columns before
+building the plot:
+
+```{r}
+tl_labeled <- tl_data$virus_info
+tl_labeled$label <- c("Avian H1N1", "Human seasonal H3N2",
+                      "Triple-reassortant swine H3N2", "2009 pandemic H1N1")
+tl_labeled$label_position <- c("left", "left", "below", "below")
+
+tl_data_labeled <- as_seqcombo_data(tl_labeled, tl_data$flow_info)
+```
+
+```{r fig.width=10, fig.height=6}
+autoplot(tl_data_labeled, v_color = ~host, v_fill = ~host,
+         link_style = "curve") + theme_seqcombo_pub()
+```
+
+For dense timelines, elbow links often read more clearly than curves:
+
+```{r fig.width=9, fig.height=6}
+autoplot(tl_data_labeled, v_color = ~host, v_fill = ~host,
+         link_style = "elbow", link_elbow_position = 0.4) +
+    theme_seqcombo_pub()
+```
+
+If both input tables carry a grouping variable, `facet_by` splits the history
+into panels — useful when several lineages co-circulate:
+
+```{r fig.width=10, fig.height=5}
+tl_info_facet <- tl_data$virus_info
+tl_info_facet$Lineage <- c("North America", "North America",
+                           "North America", "North America")
+tl_flow_facet <- tl_data$flow_info
+tl_flow_facet$Lineage <- tl_info_facet$Lineage[match(tl_flow_facet$to,
+                                                     tl_info_facet$id)]
+
+autoplot(as_seqcombo_data(tl_info_facet, tl_flow_facet),
+         v_color = ~host, v_fill = ~host,
+         link_style = "curve", facet_by = "Lineage") +
+    theme_seqcombo_pub()
+```
+
+## Notes
+
+- Sampling times do not need to be years; dates (e.g., `"2024-03-01"`) or any
+  numeric encoding works, since the values are passed through to ggplot2.
+- If you prefer manual control at every step, replace `as_seqcombo_data()` +
+  `autoplot()` with direct calls to `hybrid_plot()` — as shown in the sections
+  above.
 
 # Segment labels inside the glyphs
 

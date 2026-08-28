@@ -130,11 +130,10 @@ positions.
 
 ## Documentation
 
-The package ships with two Quarto vignettes, rendered at
+The package ships with a Quarto vignette, rendered at
 <https://yulab-smu.github.io/seqcombo/>:
 
 - [Reassortment](https://yulab-smu.github.io/seqcombo/) - a full tour of
-  `hybrid_plot()` and the available customizations.
-- [Timeline workflows](https://yulab-smu.github.io/seqcombo/timeline.html) -
-  plotting time-course reassortment data from long-format tables.
+  `hybrid_plot()`, the table-based time-course workflow, and the available
+  customizations.
 
