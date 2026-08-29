@@ -131,9 +131,9 @@ positions.
 ## Documentation
 
 The package ships with a Quarto vignette, rendered at
-<https://yulab-smu.github.io/seqcombo/>:
+<https://yulab-smu.top.io/seqcombo/>:
 
-- [Reassortment](https://yulab-smu.github.io/seqcombo/) - a full tour of
+- [Reassortment](https://yulab-smu.top/seqcombo/) - a full tour of
   `hybrid_plot()`, the table-based time-course workflow, and the available
   customizations.
 

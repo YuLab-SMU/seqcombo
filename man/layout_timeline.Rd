@@ -9,7 +9,8 @@ layout_timeline(
   flow_info,
   time_col = "x",
   axis = c("x", "y"),
-  decreasing = FALSE
+  decreasing = FALSE,
+  spread = TRUE
 )
 }
 \arguments{
@@ -22,6 +23,9 @@ layout_timeline(
 \item{axis}{which axis should preserve time, one of `x` or `y`}
 
 \item{decreasing}{whether to reverse the automatically computed axis}
+
+\item{spread}{whether to evenly spread viruses sharing the same time point
+along the other axis}
 }
 \value{
 updated `virus_info`

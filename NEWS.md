@@ -3,10 +3,6 @@
 + fix link aesthetic mappings (`l_width`/`l_alpha`) being ignored with elbow links, and stagger shared elbow positions automatically so their vertical segments no longer overlap
 + spread viruses sharing the same coordinate into evenly spaced slots via `set_layout(..., spread = TRUE)` (enabled by default in `layout_timeline()`), carry metadata columns (including facet variables) into link and label layers, and duplicate flows that cross facets so they remain visible in each panel
 + refine vignette examples that suffered from stacked viruses and overlapping links
-+ merge the `timeline.qmd` vignette into the main vignette as a dedicated
-  "Plotting time-course reassortment data" section covering the full
-  tables-to-autoplot workflow with polishing variants
-
 + add a curated host color palette: `seqcombo_host_palette()`, `apply_seqcombo_palette()` for label-to-color mapping, and `scale_seqcombo_host()` as ready-made colour/fill scales
 + extend `example_seqcombo_data()` with `long` and `genotype` teaching datasets, alongside the existing `basic` and `timeline` variants
 + improve ggplot2 compatibility by replacing deprecated `aes_()` usage and switching line border sizing to `linewidth`

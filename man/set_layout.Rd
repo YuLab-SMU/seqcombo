@@ -9,7 +9,8 @@ set_layout(
   flow_info,
   layout = "layout_nicely",
   preserve_x = FALSE,
-  preserve_y = FALSE
+  preserve_y = FALSE,
+  spread = FALSE
 )
 }
 \arguments{
@@ -22,6 +23,10 @@ set_layout(
 \item{preserve_x}{whether to preserve existing x coordinates and only update y}
 
 \item{preserve_y}{whether to preserve existing y coordinates and only update x}
+
+\item{spread}{whether to evenly spread viruses sharing the same preserved
+coordinate along the other axis (useful when many viruses share the same
+time point)}
 }
 \value{
 updated `virus_info`
